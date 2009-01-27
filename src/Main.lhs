@@ -68,7 +68,7 @@
 >             ([projects], _) <- globDir [compile $ project ++ "*"] root
 >             return . render . setAttribute "projects" (sort . map takeBaseName $ projects) $ tmpl
 >     enterM response $ setM contentType ("text/html", Just "utf-8")
->     -- enterM response $ setM contentLength (fromIntegral . L.length $ bs)
+>     enterM response $ setM contentLength (Just . fromIntegral . L.length $ bs)
 >     sendBs bs
 
 > root = "/data/gbt/raw"
