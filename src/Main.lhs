@@ -7,6 +7,7 @@
 > import Control.Concurrent.STM                      (atomically, newTVar)
 > import Control.Monad.State                         (get, runStateT)
 > import Control.Monad.Trans                         (lift, liftIO)
+> import Data.List                                   (sort)
 > import Data.Maybe                                  (fromJust)
 > import Data.Record.Label
 > import Network.Protocol.Http                        hiding (hostname)
@@ -19,15 +20,18 @@
 > import Network.Salvia.Handlers.Session              (SessionHandler, mkSessions)
 > import Network.Salvia.Httpd
 > import Network.Socket                               (inet_addr)
-> import System.Directory                             (setCurrentDirectory)
+> import System.Directory                             (doesDirectoryExist, getCurrentDirectory, setCurrentDirectory)
+> import System.FilePath                              ((</>), takeBaseName)
+> import System.FilePath.Glob
 > import System.IO                                    (hFlush, hPutStrLn)
 > import Text.StringTemplate
 > import qualified Codec.Compression.GZip as G
 > import qualified Codec.Compression.BZip as B
+> import qualified Data.ByteString.Lazy   as L
 > import qualified Data.Map as M
 
 > main = do
->     addr <- inet_addr "127.0.0.1"
+>     addr <- inet_addr "0.0.0.0"
 >     cfg  <- defaultConfig
 >     let cfg' = cfg {
 >         hostname   = "localhost"
@@ -42,7 +46,7 @@
 > handler   :: SessionHandler () ()
 > handler _ = hPrefixRouter [
 >       ("/download", downloadsHandler)
->     , ("",          hFileSystem "public")
+>     , ("/public",   hFileSystem "public")
 >     ] $ hError NotFound
 
 > downloadsHandler = hExtensionRouter [
@@ -56,9 +60,18 @@
 > downloadHtml = do
 >     source  <- liftIO $ readFile "templates/project_name.html"
 >     project <- getProject
+>     exists  <- liftIO $ doesDirectoryExist (root </> project)
 >     let tmpl = newSTMP source
+>     bs <- if exists
+>         then return . render . setAttribute "project" project $ tmpl
+>         else liftIO $ do
+>             ([projects], _) <- globDir [compile $ project ++ "*"] root
+>             return . render . setAttribute "projects" (sort . map takeBaseName $ projects) $ tmpl
 >     enterM response $ setM contentType ("text/html", Just "utf-8")
->     sendBs $ render . setAttribute "project" project $ tmpl
+>     -- enterM response $ setM contentLength (fromIntegral . L.length $ bs)
+>     sendBs bs
+
+> root = "/data/gbt/raw"
 
 > getProject :: Handler String
 > getProject = do
@@ -78,19 +91,21 @@
 >     archive <- liftIO $ prepareTar project
 >     sendBs $ B.compress archive
 
-> root = "/Users/Eric/Projects/E2E/data/06B"
-
 > prepareTar project = do
+>     dir <- getCurrentDirectory
 >     setCurrentDirectory root
 >     files   <- liftIO $ recurseDirectories [project]
 >     archive <- liftIO $ createTarArchive files
+>     setCurrentDirectory dir
 >     return $ writeTarArchive archive
 
 > downloadZip = do
+>     dir <- liftIO getCurrentDirectory
 >     liftIO $ setCurrentDirectory root
 >     project <- getProject
 >     files   <- liftIO $ recurseDirectories [project]
 >     archive <- liftIO $ addFilesToArchive [] emptyArchive files
+>     liftIO $ setCurrentDirectory dir
 >     enterM response $ setM contentType ("application/zip", Nothing)
 >     sendBs $ fromArchive archive
 
