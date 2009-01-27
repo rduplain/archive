@@ -1,0 +1,29 @@
+/**************************/
+/******** IE 6 CSS ********/
+/**************************/
+
+
+
+/******** FOOTER ********/
+div#footerUtilities a {
+	text-decoration:none;
+	color:#375774;
+	padding:0px 6px;
+	border-top:1px solid #ffffff;
+}
+
+
+
+/******** ASTRONOMER BUTTON ********/
+div#nraoUtilities ul.menu li.item174 a {
+	width:100px;
+}
+
+
+
+/******** HOME ********/
+#home h4#video {
+	position:absolute;
+	z-index:10;
+	top:100px; left:45px;
+}

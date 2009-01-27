@@ -1,0 +1,22 @@
+/**************************/
+/******** IE 7 CSS ********/
+/**************************/
+#subnavArea {display:none;}
+
+
+/******** FOOTER ********/
+div#footerUtilities a {
+	text-decoration:none;
+	color:#375774;
+	padding:0px 6px;
+	border-top:1px solid #ffffff;
+}
+
+/******** FIX FOR OVERLAPPING MENU ********/
+div#article_below {
+	padding:20px;
+	font-family:Verdana,Arial,Helvetica,Sans-Serif;
+	font-size:12px;
+	line-height:1.5;
+	margin-top:30px;
+}

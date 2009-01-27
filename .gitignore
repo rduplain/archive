@@ -1,0 +1,15 @@
+*.bak
+*.beam
+*.gz
+*.log
+*.new
+*.pid
+*.pyc
+*.sav
+*~
+.DS_Store
+.svn/
+_darcs/
+3rd-party/
+dist/
+log/

@@ -1,0 +1,99 @@
+#header h1 {
+	text-indent:-9999px;
+	background-image:url(top_bar.png);
+	background-repeat:no-repeat;
+	height:78px;
+}
+
+div#nraoTopMenu ul.menu li a {
+	display:block;
+	height:24px;
+	width:156px;
+	margin-right:4px;
+	font-weight:bold;
+	font-size:14px;
+	text-align:center;
+	background:transparent url('tabs.jpg') 0px 0px no-repeat;
+	padding:8px 0px 0px 0px;
+	overflow:hidden;
+	color:#FFFFFF;
+	text-decoration:none;
+}
+
+div#nraoTopMenu ul.menu li.active a {   /* CURRENT TAB */
+        background:transparent url('tabs.jpg') 0px -34px
+        no-repeat;
+}
+
+div#nraoUtilities ul.menu li.item174, div#nraoUtilities ul.menu li.item163 {
+	background:transparent url('bg_button_a.gif') no-repeat scroll right top;
+	display:block;
+	font-weight:bold;
+	height:24px;
+	margin-right:6px;
+	padding-right:18px;
+	white-space:nowrap;
+}
+
+div#nraoUtilities ul.menu li.item174 a, div#nraoUtilities ul.menu li.item163 a {
+	background:transparent url('bg_button_span.gif') no-repeat left top;
+	display:block;
+	line-height:24px;
+	height:24px;
+}
+
+div#nraoUtilities ul.menu {
+        list-style:none;
+        overflow:hidden;
+        position:absolute;
+        z-index:2007;
+        top:10px;
+        /*left:50%;*/
+        display:block;
+        margin-left:603px;
+}
+
+#nraoSearch form {
+    display: inline;
+}
+
+.coversheet-wrapper {
+    margin: 3em 0;
+    width: 100%;
+}
+
+.coversheet {
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 14pt;
+}
+
+.coversheet-title {
+    font-weight: bold;
+    font-size: large;
+}
+
+.coversheet-spacer {
+    margin: 10em;
+}
+
+.download-area {
+    padding: 1em;
+}
+
+.download-area li {
+    margin: 10px 0;
+}
+
+.download-link {
+    text-decoration: none;
+}
+
+.download-link img {
+    border: none;
+}
+
+.hidden {
+    visibility: hidden;
+}

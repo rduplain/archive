@@ -1,0 +1,939 @@
+@charset "UTF-8";
+/* CSS Document */
+/**************************************************************************************************************************/
+/**************************************************                      **************************************************/
+/**************************************************        COLORS        **************************************************/
+/**************************************************                      **************************************************/
+/**************************************************************************************************************************/
+/*
+Dark Blue = 0f3658
+Mid-Blue = 375774
+Light Blue = 96b3ce
+Light Light Blue = b0c5d6  (home text on black)       e2eaf0
+Yellow = d2a510   (light = f4e8c3)
+Orange = fcac00
+Maroon = 661a03
+*/
+/********************************************************************************************************************************/
+/**********************************************                                    **********************************************/
+/**********************************************        CLEAR DEFAULT STYLES        **********************************************/
+/**********************************************                                    **********************************************/
+/********************************************************************************************************************************/
+html, body, ul, ol, li, p, h1, h2, h3, h4, h5, h6, form, fieldset, a, dl, dt, dd {margin:0; padding:0; border:0;}
+body { 
+	background-color:#0F2637; 
+	background-repeat:repeat-y;
+	background-position:center;	
+	font:normal 10px/1.5em "Lucida Grande", Tahoma, Helvetica, Arial, sans-serif;
+	color:#000000;
+}
+.content {font-family:Verdana,Arial,Helvetica,Sans-Serif;}
+/*********************************************************************************************************************************/
+/**********************************************                                     **********************************************/
+/**********************************************        MAIN LAYOUT STRUCTURE        **********************************************/
+/**********************************************                                     **********************************************/
+/*********************************************************************************************************************************/
+#wrapper {
+	width:804px;
+	margin:0 auto;
+	background-color:#fff;
+}	
+#header {
+	height:78px;
+	background-color:#fff;
+	overflow:hidden;
+}
+#header a#gohome {
+	display:block;
+	position:absolute;
+	top:0px;
+	width:500px;height:70px;
+	text-indent:-9999px;
+}
+#header h1 {
+	text-indent:-9999px;
+	background-image:url(../assets/interface/bg_header.jpg);
+	background-repeat:no-repeat;
+	height:78px;
+}
+#content_above {
+	position:relative;
+	height:140px;
+	margin:4px 0 4px 0;
+	background-color:#74a6d7;
+	overflow:hidden;
+}
+#content_below {
+	position:relative;
+	margin:0 0 4px 0;
+	background-color:#000000;
+	overflow: hidden;
+	font-size:12px;
+}
+#homeSpace {   /*Fix for home stretch to fit content*/
+	color:#FFFFFF;
+	text-indent:-9999px;
+	height:200px;
+}	
+/***********************************************************************************************************************************/
+/*********************************************                                         *********************************************/
+/*********************************************        TAB MENU & SECONDARY MENU        *********************************************/
+/*********************************************                                         *********************************************/
+/***********************************************************************************************************************************/
+/**********************************        TAB MENU        **********************************/
+div#nraoTopMenu ul.menu {
+	list-style:none;
+	height:31px; width:804px;
+	margin-left:3px;
+}
+div#nraoTopMenu ul.menu li {float:left;}
+div#nraoTopMenu ul.menu li:hover ul {display:block;}
+div#nraoTopMenu ul.menu li a {
+	display:block;
+	height:24px;
+	width:156px;
+	margin-right:4px;
+	font-weight:bold;
+	font-size:14px;
+	text-align:center;
+	background:transparent url('../assets/interface/tabs.jpg') 0px 0px no-repeat;
+	padding:8px 0px 0px 0px;
+	overflow:hidden;
+	color:#FFFFFF;
+	text-decoration:none;
+}
+div#nraoTopMenu ul.menu li a:hover {background-position: 0px -34px;}
+div#nraoTopMenu ul.menu li.active a {   /* CURRENT TAB */
+	background:transparent url('../assets/interface/tabs.jpg') 0px -34px no-repeat;
+}
+/**********************************        SECONDARY MENU        **********************************/
+div#nraoTopMenu ul.menu li ul {
+	display:none;
+	position:absolute;
+	list-style:none;
+	cursor:pointer;
+	background-color:#96b3ce;
+	color:#0f3658;
+	margin:0px;
+	margin-top:-1px;
+	padding:0px;
+	width:156px;
+	z-index:2008;
+	height:auto;
+}
+div#nraoTopMenu ul.menu li ul li {
+	float:none;
+	height:auto;
+}
+div#nraoTopMenu ul.menu li ul li.item241,
+div#nraoTopMenu ul.menu li ul li.item242 {
+	display:none;   /* HIDE ASK AN ASTRONOMER SENT & REQUEST MATERIALS SENT */
+}
+div#nraoTopMenu ul.menu li ul li a {
+	text-align:left;
+	background-image:none;
+	color:#0f3658;
+	font-size:12px;
+	text-decoration:none;
+	height:auto;
+	width:auto;
+	margin:0px;
+	padding:5px 0px 5px 10px;
+	border-bottom:1px dotted #0f3658;
+}
+div#nraoTopMenu ul.menu li ul li a:hover {
+	color:#ffffff;
+	background-color:#661a03;
+}
+/* CURRENT SECONDARY */
+div#nraoTopMenu ul.menu li.active ul {
+	/*position:absolute;*/
+	list-style:none;
+	overflow:hidden;
+	display:block;
+	height:26px;
+	width:804px;
+	/*margin-left:-63px;*/
+	/*left:50%;*/
+	/*top:110px; */  /*115*/
+	/*margin-left:-402px;*/
+	background-color:#661a02;
+	border-top:4px solid #FFFFFF;   /*Takes place of empty space so mouseovers can keep the flyouts sticky*/
+	cursor:pointer;
+	z-index:2007;
+}
+div#nraoTopMenu ul.menu li.active.item1 ul {display:none;}
+div#nraoTopMenu ul.menu li.active.item53 ul {margin-left:-163px;}
+div#nraoTopMenu ul.menu li.active.item188 ul {margin-left:-323px;}
+div#nraoTopMenu ul.menu li.active.item55 ul {margin-left:-483px;}
+div#nraoTopMenu ul.menu li.active.item87 ul {margin-left:-643px;}
+div#nraoTopMenu ul.menu li.active ul li {
+	float:left;
+	height:auto;
+	border-left:1px dotted #ffffff;
+	margin-left:10px;
+}
+div#nraoTopMenu ul.menu li.active ul li.item91, 
+div#nraoTopMenu ul.menu li.active ul li.item147, 
+div#nraoTopMenu ul.menu li.active ul li.item93, 
+div#nraoTopMenu ul.menu li.active ul li.item253 {   /* SUBMENU ITEMS TO NOT HAVE LEFT BORDER */
+	border-left:none;
+	margin-left:0px;
+}
+div#nraoTopMenu ul.menu li.active ul li a {
+	text-align:left;
+	background-image:none;
+	color:#ffffff;
+	font-size:12px;
+	text-decoration:none;
+	height:auto;
+	width:auto;
+	margin:0px;
+	padding:5px 0px 5px 10px;
+	border-bottom:1px dotted #0f3658;
+}
+div#nraoTopMenu ul.menu li.active ul li a:hover {
+	color:#fcac00;
+}
+div#nraoTopMenu ul.menu li.active a, div#nraoTopMenu ul.menu li.parent ul li.active a {
+	color:#fcac00;
+}
+div#nraoTopMenu ul.menu li.parent ul li.parent ul {   /*Hide tertiary*/
+	display:none;
+}
+/*********************************************************************************************************************************/
+/**************************************************                             **************************************************/
+/**************************************************        TERTIARY MENU        **************************************************/
+/**************************************************                             **************************************************/
+/*********************************************************************************************************************************/
+div#tertiaryMenu{
+	background:url(../assets/interface/bg_callout_top.gif) no-repeat top left;
+	background-color:#96b3ce;
+	float:right;
+	clear:right;
+	display:block;
+	width:220px;
+	margin-bottom:10px;
+	margin-left:10px;
+}
+div#tertiaryMenu .menu_rad,
+div#tertiaryMenu .menu_sci,
+div#tertiaryMenu .menu_mes,
+div#tertiaryMenu .menu_pro,
+div#tertiaryMenu .menu_gal,
+div#tertiaryMenu .menu_act,
+div#tertiaryMenu .menu_bro,
+div#tertiaryMenu .menu_fac{
+	margin-left:0px;
+}
+div#tertiaryMenu a {
+	color:#0f3658;
+	text-decoration:none;
+}
+div#tertiaryMenu a:hover {
+	text-decoration:underline;
+}
+div#tertiaryMenu ul {
+	color:#0f3658;
+	list-style:none;
+}
+div#tertiaryMenu ul li {
+	border-bottom:1px dotted #0f3658;
+	margin-left:20px;
+}
+div#tertiaryMenu .menu_rad .item272,
+div#tertiaryMenu .menu_sci .item197,
+div#tertiaryMenu .menu_mes .item240,
+div#tertiaryMenu .menu_pro .item198,
+div#tertiaryMenu .menu_gal .item199,
+div#tertiaryMenu .menu_act .item200,
+div#tertiaryMenu .menu_fac .item201 {   /*Science menu title*/
+	font-weight:bold;
+	padding:6px;
+	color:#0f3658;
+	margin-left:0px;
+	border-bottom:none;
+}
+div#tertiaryMenu .menu_gal .item243 {   /*Science menu title*/
+	display:none;
+}
+/*****************************************************************************************************************************/
+/**************************************************                         **************************************************/
+/**************************************************        USER MENU        **************************************************/
+/**************************************************                         **************************************************/
+/*****************************************************************************************************************************/
+div#nraoUtilities li.item61,
+div#nraoUtilities li.item65,
+div#nraoUtilities li.item145,
+div#nraoUtilities li.item79 {
+	display:none;   /*-------- Hide login and TEMP menu items --------*/
+}
+div#nraoUserAcess ul.menu {
+	list-style:none;
+	position:absolute;   /*Effected by #content_below{position:relative;}*/
+	display:block;
+	top:10px;
+	left:50%;
+	z-index:2007;
+	margin-left:-330px;
+	background-color:#FFFFFF;	
+}	
+div#nraoUserAcess ul.menu li {float:left;}
+div#nraoUserAcess ul.menu li span img {position:relative;}
+div#nraoUserAcess ul.menu li a {
+	display:block;
+	padding:0px 5px;
+	margin:0px;
+	font-size:12px;
+	text-decoration:none;
+	color:#333333;
+	background-color:#FFFFFF;
+}
+div#nraoUserAcess ul.menu li a:hover {color:#fcac00;}
+form {clear:both;}
+div#nraoUserAcess form {margin:20px; color:#FFFFFF;}
+div#nraoUserAcess a {color:#FFFFFF;}
+/* #content_below {overflow: hidden;} IS HIDING REST OF FORM!!! */
+/**************************************************************************************************************************/
+/**************************************************                      **************************************************/
+/**************************************************        SEARCH        **************************************************/
+/**************************************************                      **************************************************/
+/**************************************************************************************************************************/
+div#nraoSearch {
+	width:200px;
+	height:30px;
+	overflow:hidden;
+	position:absolute;
+	top:39px;
+	left:50%;
+	margin-left:200px;
+}
+div#nraoSearch input {width:150px;}
+img#nraoSearchButton {
+	position:relative;
+	top:5px;
+	left:3px;
+}
+#searchForm {
+	padding:10px;
+	color:#000000;
+	font-size:12px;
+}
+/*****************************************************************************************************************************/
+/**************************************************                         **************************************************/
+/**************************************************        UTILITIES        **************************************************/
+/**************************************************                         **************************************************/
+/*****************************************************************************************************************************/
+div#nraoUtilities ul.menu {
+	list-style:none;
+	overflow:hidden;
+	position:absolute;
+	z-index:2007;
+	top:10px;
+	/*left:50%;*/
+	display:block;
+	margin-left:654px;   /*380 ... MOVE UTILITY LEFT AND RIGHT*/
+	/*margin-left:-10px;*/   /*Used to adjust left edge of utility left and right of center page*/
+}	
+div#nraoUtilities ul.menu li {float:left;}
+div#nraoUtilities ul.menu li img {position:relative;}
+div#nraoUtilities ul.menu li a {
+	display:block;
+	padding:0px 5px;
+	margin:0px;
+	font-size:12px;
+	text-decoration:none;
+	color:#333333;
+}
+div#nraoUtilities ul.menu li a:hover {color:#fcac00;}
+div#nraoUtilities ul.menu li.item174 a img, div#nraoUtilities ul.menu li.item163 a img {
+	border:0px;
+	vertical-align:middle;
+	margin-right:3px;
+}
+div#nraoUtilities ul.menu li.item174, div#nraoUtilities ul.menu li.item163 {
+	background:transparent url('/images/bg_button_a.gif') no-repeat scroll right top;
+	display:block;
+	font-weight:bold;
+	height:24px;
+	margin-right:6px;
+	padding-right:18px;
+	white-space:nowrap;
+}
+div#nraoUtilities ul.menu li.item174 a, div#nraoUtilities ul.menu li.item163 a {
+	background:transparent url('/images/bg_button_span.gif') no-repeat left top;
+	display:block;
+	line-height:24px;
+	height:24px;
+}
+div#nraoUtilities ul.menu li.item174 a img, div#nraoUtilities ul.menu li.item163 a img {
+	margin-left:18px;
+}
+div#nraoUtilities ul.menu li.item174:hover, div#nraoUtilities ul.menu li.item163:hover {
+	background-position: right -24px;
+}
+div#nraoUtilities ul.menu li.item174 a:hover, div#nraoUtilities ul.menu li.item163 a:hover {
+	background-position: 0px -24px;
+}
+div#nraoUtilities ul.menu li.item174 a:hover span, div#nraoUtilities ul.menu li.item163 a:hover span {
+	color:#661a03;
+}
+/*
+div#nraoUtilities ul.menu li.item174 span:before {
+	content:url("/templates/nrao/assets/interface/icon_science.html");
+}
+*/
+div#nraoUtilities ul.menu li.item163 {
+	display:none;
+}
+/*******************************************************************************************************************************/
+/**************************************************                           **************************************************/
+/**************************************************        BREADCRUMBS        **************************************************/
+/**************************************************                           **************************************************/
+/*******************************************************************************************************************************/
+#subnavArea {
+	background-color:#255279; /*255279*/
+	border-top:4px solid #FFFFFF;
+	height:26px;
+	padding-left:10px;
+	color:#FFFFFF;
+	font-size:12px;
+	font-weight:bold;
+	vertical-align:middle;
+}
+#dateArea {margin-top:5px;}
+span.breadcrumbs {
+	display:block;
+	margin-left:10px;
+	margin-top:5px;
+	margin-bottom:-10px;
+	/*padding:4px;*/
+}
+#nraoBreadcrumbs .pathway {
+	color:#333333;
+	font-size:12px;
+}
+#nraoBreadcrumbs {
+	/*margin-top:34px;*/
+}
+/***************************************************************************************************************************/
+/**************************************************                       **************************************************/
+/**************************************************        BUTTONS        **************************************************/
+/**************************************************                       **************************************************/
+/***************************************************************************************************************************/
+a.button {
+	text-decoration:none;
+	font:bold 12px Arial, Helvetica, sans-serif;
+	overflow:hidden;
+	display:block;
+	/*background:transparent url('../images/buttons.gif') 0px 0px no-repeat;*/
+	background: url(../assets/interface/buttons.gif) no-repeat top left;
+	padding:3px 0px 0px 0px;
+	width:100px;
+	height:24px;
+	text-align:center;
+	color:#000000;
+}
+a.button:link {background-position: 0px 0px; color:#000000;}
+a.button:hover {background-position: 0px -27px; color:#ffffff;}
+a.button:active {background-position:0px -27px; color:#ffffff;}
+a.buttonShort {
+	text-decoration:none;
+	font:bold 12px Arial, Helvetica, sans-serif;
+	overflow:hidden;
+	display:block;
+	background: url(../assets/interface/btnScience_short.gif) no-repeat top left;
+	padding:3px 0px 0px 0px;
+	width:70px;
+	height:24px;
+	text-align:center;
+	color:#ffffff;
+}
+a.buttonShort:link {background-position: 0px 0px; color:#ffffff;}
+a.buttonShort:hover {background-position: 0px -27px; color:#ffffff;}
+a.buttonShort:active {background-position:0px -27px; color:#ffffff;}
+/************************************************************************************************************************/
+/**************************************************                    **************************************************/
+/**************************************************        HOME        **************************************************/
+/**************************************************                    **************************************************/
+/************************************************************************************************************************/
+#homefeature {
+	position:absolute;
+	top:0; left:0;
+	height:140px;
+	width:1500px;
+	background-image:url(../assets/features/beta_fornax_fade_smallest.gif);  /*home2.jpg*/
+	background-repeat:no-repeat;
+}
+#home h3#featureText1 {   /*#home h4#video*/
+	position:absolute;
+	z-index:10;
+	top:20px; left:45px;
+	text-indent:-9999px;
+	background-repeat:no-repeat;
+	width:600px; height:100px;
+	background-image:url(../assets/features/h3_home1.gif);
+}	
+#home h4#video {
+	/*background-image:url(../assets/features/btn_watchvideo.gif);*/
+	position:absolute;
+	z-index:10;
+	top:20px; left:45px;
+}
+div#featuredlinks {
+	position:relative;
+	top:75px;
+	left:0px;
+}
+ul#scopelist {
+	list-style:none;
+	height:128px; width:530px;
+	border-bottom:1px solid #798691;
+	overflow:hidden;
+	margin:0px;
+}	
+ul#scopelist li {float:left;}
+ul#scopelist li a {
+	display:block;
+	height:112px; width:119px;
+	margin-right:12px;
+	margin-bottom:12px;
+	text-indent:-9999px;
+	border-width:2px;
+	border-style:solid;
+	border-color:#0F2637;
+}
+li#scope_alma a {background-image:url(../assets/telescopes/thumb_alma.jpg);}	
+li#scope_vla a {background-image:url(../assets/telescopes/thumb_vla.jpg);}	
+li#scope_gbt a {background-image:url(../assets/telescopes/thumb_gbt.jpg);}	
+ul#scopelist li#scope_vlba a {background-image:url(../assets/telescopes/thumb_vlba.jpg); margin-right:0;}
+.contentblock {
+	position:absolute;
+	background-repeat: no-repeat;
+	/*text-indent: -9999px;*/   /*SHOW TEXT FOR HOME PAGE INSTEAD OF IMAGES*/
+	overflow:hidden;
+}
+#home #news, #home #press {
+	height:329px;width:265px;
+	top:155px; left:19px;
+	border-right:1px solid #798691;
+	color:#FFFFFF;
+	font-weight:bold;
+	/*background-image: url(../assets/home/bg_news_events.gif);*/   /*SHOW TEXT FOR HOME PAGE INSTEAD OF IMAGES*/
+}
+#home #press {
+	left:300px;
+	border:none;
+	/*background-image: url(../assets/home/bg_press.gif);*/   /*SHOW TEXT FOR HOME PAGE INSTEAD OF IMAGES*/
+}	
+#home #services_login {
+	top:10px; left:567px;
+	width:240px; height:215px;
+	background-image: url(../assets/home/bg_services_login.gif);
+}	
+#home #callout {
+	top:40px; left:567px;   /*REPLACED top:230px; WITH top:10px; FOR EPO HOME PAGE*/
+	width:240px; height:215px;
+	color:#FFFFFF;
+	font-weight:bold;
+	/*background-image: url(../assets/home/bg_callout_slide.gif);*/   /*SHOW TEXT FOR HOME PAGE INSTEAD OF IMAGES*/
+}
+table#homeContent {
+	padding:0px;
+	margin-top:20px;
+	margin-left:20px;
+}
+td#newsletter, td#pressRelease {color:#b0c5d6;}
+td#newsletter a, td#pressRelease a {color:#b0c5d6; text-decoration:none;}
+td#newsletter a:hover, td#pressRelease a:hover {
+	text-decoration:underline;
+}
+.homeSectionTitle {
+	border-bottom:1px solid #d2a510;   /*d2a510*/
+	margin-bottom:6px;
+	font-weight:bold;
+	color:#d2a510;   /*d2a510*/
+	/*text-transform:uppercase;*/
+}
+a#primeNewsTitle {   /*NOT WORKING*/
+	text-decoration:none;
+	font-weight:bold;
+	color:#d2a510;
+}
+div#newsFeedTop, div#eventsTop, div#workshopsTop {
+	font-size:3px;
+	height:10px;
+	background:url(../assets/home/bg_news_top.gif) no-repeat top left;
+}
+div#newsFeedBottom, div#eventsBottom, div#workshopsBottom {
+	height:10px;
+	background:url(../assets/home/bg_news_bottom.gif) no-repeat top left;
+}
+div#newsFeed, div#events, div#workshops {
+	margin-top:0px;
+	text-align:left;
+	background-color:#96b3ce;   /*96b3ce*/
+	font-size:12px;
+	color:#0f3658;
+	padding:6px;
+}
+div#newsFeedTitle, div#eventsTitle, div#workshopsTitle {
+	font-weight:bold;
+	font-size:14px;
+	color:#020202;
+	position:relative;
+	top:-12px;
+	border-bottom:1px solid #020202;
+	margin-bottom:-10px;
+	/*text-transform:uppercase;*/
+}
+td#newsletter img.newsImage, td#pressRelease img.newsImage {border:1px solid #0f3658;}
+div#newsFeed a, div#events a, div#workshops a {color:#0f3658; text-decoration:none;}
+div#newsFeed a:hover, div#events a:hover, div#workshops a:hover {text-decoration:underline;}
+div#newsFeed p, div#events p, div#workshops p {padding-bottom:9px;}
+div#newsFeed ul, div#events ul, div#workshops ul {
+	color:#0f3658; list-style:none;
+}
+div#newsFeed ul li, div#events ul li, div#workshops ul li {clear:both; border-bottom:1px dotted #0f3658; margin-left:0px;}
+div#newsFeed img.newsImage {clear:both; float:right; width:75px; height:75px; margin-left:6px; margin-bottom:6px;}
+div#servicesLoginTop {
+	/*margin-top:12px;*/
+	font-size:3px;
+	height:9px;
+	background:url(../assets/home/bg_services_top.gif) no-repeat top left;
+}
+div#servicesLoginBottom {
+	height:9px;
+	background:url(../assets/home/bg_services_bottom.gif) no-repeat top left;
+	margin-bottom:12px;
+}
+div#servicesLogin {
+	text-align:left;
+	background-color:#651a00;
+	font-size:12px;
+	color:#9b6a59;
+	padding:6px;
+}
+div#servicesLoginTitle {
+	font-weight:bold;
+	font-size:14px;
+	color:#d2a510;
+	position:relative;
+	top:-12px;
+	border-bottom:1px solid #d2a510;
+}
+div#servicesLoginTitle a {
+	text-decoration:none;
+	color:#d2a510;
+}
+form#servicesLoginForm input {
+	border:1px solid #9b6a59;
+	color:#651a00;
+	background-color:#cdb5ac;
+}
+p.scienceActivityTitle {
+	font-size:14px;
+	font-weight:bold;
+	color:#ffffff;
+}
+p.scienceActivitySubTitle {
+	color:#d2a510;
+	font-style:italic;
+}
+img.scienceActivityImage {
+	float:left;
+	width:113px;
+	height:150px;
+	margin-right:12px;
+	padding-bottom:12px;
+}
+#homeNewsReleases td {
+	border-bottom:1px dotted #0f3658;
+	vertical-align:top;
+}
+div#featureImageNumbers {margin-top:6px;}
+/*******************************************************************************************************************************/
+/**********************************************                                   **********************************************/
+/**********************************************        RESEARCH FACILITIES        **********************************************/
+/**********************************************                                   **********************************************/
+/*******************************************************************************************************************************/
+#telescopes {margin-top:20px;}
+#telescopes #content_above {background-color: #0d1e2c; height:312px;}
+#telescopes #content_below {background-image: url(../assets/telescopes/bg_content_below); height:294px;}
+#telescopes dl#featurechoices {
+	position:absolute;
+	width:804px; height:300px;
+	list-style: none;
+	background-repeat: no-repeat;
+	padding-top:5px;
+}
+#telescopes #featurechoices dt {
+	position:absolute;
+	width:189px; height:203px;
+	text-indent: -9999px;
+	z-index:2;
+	background-repeat: no-repeat;
+	background-position: center left;
+	border:2px solid #0d1e2c;
+	cursor:pointer;
+}
+#telescopes #featurechoices dd {
+	position:absolute;
+	z-index:1;
+	width:202px; height:191px;
+	top:210px;
+	text-indent: -9999px;
+	background-position: 0 -5px;
+	background-repeat: no-repeat;
+	cursor:pointer;
+}
+#featurechoices dt#alma_term {left:5px; background-image: url(../assets/telescopes/dt_alma.jpg);}
+#featurechoices dt#vla_term {left:207px; background-image: url(../assets/telescopes/dt_vla.jpg);}
+#featurechoices dt#gbt_term {left:409px; background-image: url(../assets/telescopes/dt_gbt.jpg);}
+#featurechoices dt#vlba_term  {left:610px; background-image: url(../assets/telescopes/dt_vlba.jpg);}	
+#featurechoices dt#vlba_term, #featurechoices dt#vlba_term a {margin-right:0;}
+#featurechoices dd#alma_def {left:0; background-image: url(../assets/telescopes/dd_alma1.gif);}
+#featurechoices dd#vla_def {left:202px; background-image: url(../assets/telescopes/dd_vla1.gif);}
+#featurechoices dd#gbt_def {left:404px; background-image: url(../assets/telescopes/dd_gbt1.gif);}
+#featurechoices dd#vlba_def {left:606px; background-image: url(../assets/telescopes/dd_vlba1.gif); border-right:none;}
+#telescopes #content {
+	width:582px; height:291px;
+	border-right:1px solid #798691;
+	top:0; left:0;
+	background-image: url(../assets/telescopes/telescopes_main_content.gif);
+}
+#telescopes #map {
+	width:205px; height:267px;
+	top:10px; left:600px;
+	background-image: url(../assets/telescopes/bg_googlemap.gif);
+}		
+/***************************************************************************************************************************/
+/**************************************************                       **************************************************/
+/**************************************************        CONTENT        **************************************************/
+/**************************************************                       **************************************************/
+/***************************************************************************************************************************/
+div#article_below {
+	padding:20px;
+	font-family:Verdana,Arial,Helvetica,Sans-Serif;
+	font-size:12px;
+	line-height:1.5;
+}
+div#article_below div.componentheading {
+	font-weight:bold;
+	font-size:18px;
+	margin-bottom:6px;
+	color:#0f3658;
+}
+div#article_below p {margin-bottom:10px;}
+div#article_below ul, div#article_below ol {margin-left:40px; margin-bottom:10px;}
+div#article_below img {border:1px solid #666666;}
+div#home_below {
+	margin:-20px;
+	font:normal 12px/1.25em "Lucida Grande", Tahoma, Helvetica, Arial, sans-serif;
+}
+div#article_below div#home_below p {margin-bottom:0px;}
+div#article_below div#home_below ul, div#article_below div#home_below ol {margin-left:0px; margin-bottom:0px;}
+div#article_below div#home_below img {border:none;}
+div#article_below div#home_below img.newsImage {border:1px solid #0f3658;}  /*REPEATED HERE TO OVERRIDE PRIOR LINE*/
+h1 {
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	font-size:18px;
+	margin-bottom:6px;
+	color:#0f3658;
+}
+h2 {
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	font-size:14px;
+	margin-top:6px;
+	margin-bottom:6px;
+	color:#0f3658;
+}
+p.subTitle {color:#375774;}
+a.readMore {
+	font-weight:bold;
+	/*color:#375774;
+	text-decoration:none;*/
+}
+a.readMore:hover {text-decoration:underline;}
+/*ORIGINATED ON SCIENCE PAGE*/
+img.inlineImgLeft {
+	float:left;
+	margin-right:10px;
+	clear:left;
+	display:block;
+}
+div.contSci2Col {
+	width:510px;
+}
+div.contSci2Col a, a.articleLink {/*text-decoration:none; color:#375774;*/}
+div.contSci2Col a:hover, a.articleLink:hover {text-decoration:underline;}
+/*ORIGINATED ON DIRECTOR TABLE*/
+td.tableRowHead, td.tableRowOdd, td.tableRowEven {
+	font-size:12px;
+}
+td.tableRowOdd {border-bottom:1px dotted #333333; background-color:#cbd9e7;}
+td.tableRowEven {border-bottom:1px dotted #333333;}
+td.tableRowHead {border-bottom:2px solid #333333; font-weight:bold; padding:6px;}
+table#dataTable img {border:none; margin:6px;}
+table#dataTable td {padding:6px;}
+/*ORIGINATED ON ABOUT PAGE*/
+img.articleImgFull {margin-bottom:6px;}
+.articleIntro {
+	border-top:2px dotted #96b3ce;
+	border-bottom:2px dotted #96b3ce;
+	padding-top:6px;
+	padding-bottom:0px;
+	color:#375774;
+	font-weight:bold;
+	margin-bottom:12px;
+}
+.articleIntro p {margin:0px; padding:0px;}
+.articleLeft {width:252px; float:left;	margin-right:20px;}
+.articleMiddle {width:252px; float:left;}
+.articleRight {width:220px; float:right;}
+.articleLeft ul li, .articleMiddle ul li, .articleRight ul li {margin-left:-15px; padding-bottom:12px;}
+/*ORIGINATED ON FIND RESOURCES*/
+table.contFindRes {width:510px;}
+table.contFindRes a {
+	/*text-decoration:none;
+	color:#375774;*/
+}
+table.contFindRes a:hover {text-decoration:underline;}
+table.contFindRes img {
+	float:left;
+	margin-right:10px;
+}
+td.contFindResLeft {
+	padding-right:20px;
+	width:255px;
+	border-right:1px solid #999999;
+}
+td.contFindResRight {
+	padding-left:20px;
+	width:255px;
+}
+/*ORIGINATED ON RADIO ASTRONOMY*/
+p.caption, .caption {
+	font-size:10px;
+	color:#333333;
+	text-align:left;
+}
+.caption2 {
+	font-size:10px;
+	color:#333333;
+}
+/*ORIGINATED ON RESEARCH FACILITIES*/
+.contStrong {
+	font-weight:bold;
+	color:#375774;
+}
+/*ORIGINATED ON GALLERY*/
+.note {
+	font-weight:bold;
+	color:#FF0000;
+}
+/*ORIGINATED ON GB SCIENCE CENTER*/
+a.importantLink {
+	font-weight:bold;
+	color:#b48002;
+}
+/*ORIGINATED ON BROCHURES & POSTERS*/
+a.tableLink {
+	/*color:#0f3658; text-decoration:none;*/
+}
+/*ORIGINATED ON SCIENCES TERTIARIES*/
+div#movie1, div#movie2 {
+	/*background-color:#FFFFCC;
+	padding:12px;
+	border:1px solid #666666;
+	height:auto;
+	margin-bottom:12px;*/
+}
+div#mediaPlayerShell, div#mediaPlayerShell2 {
+	width:320px;
+	float:left;
+	margin-right:12px;
+	margin-bottom:12px;
+}
+h1.enews {border-top:2px solid #375774; clear:both; color:#992705;}
+h2.enews {font-size:12px; margin-top:-10px; color:#6c8aa6;}
+div.enews {width:238px; padding:5px; float:left; clear:both; margin:0px 10px 10px 0px; background-color:#96b3ce; border:1px solid #375774; text-align:center;}
+div#article_below img.zoom {border:none; vertical-align:middle;}
+.altrow {
+	background-color:#b0c5d6;
+}
+/***************************************************************************************************************************/
+/**************************************************                       **************************************************/
+/**************************************************        SIDEBAR        **************************************************/
+/**************************************************                       **************************************************/
+/***************************************************************************************************************************/
+div.callout, div.callout2, div.callout3 {
+	background:url(../assets/interface/bg_callout_top.gif) no-repeat top left;
+	background-color:#96b3ce;
+	float:right;
+	clear:right;
+	display:block;
+	width:220px;
+	margin-bottom:10px;
+	margin-left:10px;
+}
+div.callout h2, div.callout2 h2 {padding:6px; color:#0f3658;}
+div.callout p, div.callout2 p {padding-left:20px; padding-right:20px;}
+div.callout a, div.callout2 a {color:#0f3658; text-decoration:none;}
+div.callout a:hover, div.callout2 a:hover {text-decoration:underline;}
+div.calloutBottom {
+	background:url(../assets/interface/bg_callout_bottom.gif) no-repeat bottom left;
+	background-color:#96b3ce;
+	height:10px;
+}
+div.callout ul, div.callout2 ul, div.newsFeed ul {color:#0f3658; list-style:none;}
+div.callout ul li, div.callout2 ul li, div.newsFeed ul li {border-bottom:1px dotted #0f3658; margin-left:-20px;}
+div.callout img, div.callout2 img, div.newsFeed img {display:block;	margin:auto;}
+div.callout img.newsImage, div.callout2 img.newsImage, div.newsFeed img.newsImage {clear:both; float:right; width:75px; height:75px; margin-left:6px; margin-bottom:6px;}
+div.callout li.newsItem, div.callout2 li.newsItem {clear:both;}
+div.callout .strong, div.callout2 .strong {
+	font-weight:bold;
+	color:#375774;
+}
+div.callout2, div.callout3 {
+	background:none;
+	background-color:#ffffff;
+	border:1px solid #96b3ce;
+}
+div.callout3 {border:none;}
+div.calloutBottom2 {display:none;}
+div#tocFloat, div#tocFloatJoomla {clear:both; float:right; position:absolute; left:564px;}
+/*div.calloutSelected {list-style-image:url(images/arrow_right.gif);}*/
+/**************************************************************************************************************************/
+/**************************************************                      **************************************************/
+/**************************************************        FOOTER        **************************************************/
+/**************************************************                      **************************************************/
+/**************************************************************************************************************************/
+div#footerUtilities {
+	clear:both;
+	text-align:center;
+	font-size:12px;
+	color:#375774;
+	border-top:1px solid #26547d;
+	margin-top:-4px;   /*NEEDED FOR HOME PAGE*/
+}
+div#footerUtilities a {
+	text-decoration:none;
+	color:#375774;
+	padding:0px 6px;
+}
+div#footerUtilities a:hover {
+	text-decoration:underline;
+}
+#footer {
+	clear:both;
+	height:60px;
+	background-color:#ffffff;
+	border-top:1px solid #26547d;
+	font-size:11px;
+	color:#516f9c;
+	padding:10px 20px 0px 20px;
+	font-weight:bold;
+}
