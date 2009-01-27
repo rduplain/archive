@@ -41,8 +41,8 @@
 
 > handler   :: SessionHandler () ()
 > handler _ = hPrefixRouter [
->       ("/downloads", downloadsHandler)
->     , ("",           hFileSystem "public")
+>       ("/download", downloadsHandler)
+>     , ("",          hFileSystem "public")
 >     ] $ hError NotFound
 
 > downloadsHandler = hExtensionRouter [
