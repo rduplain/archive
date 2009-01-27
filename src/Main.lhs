@@ -19,11 +19,13 @@
 > import Network.Salvia.Handlers.Session              (SessionHandler, mkSessions)
 > import Network.Salvia.Httpd
 > import Network.Socket                               (inet_addr)
+> import Numeric                                      (showHex)
 > import System.Directory                             (setCurrentDirectory)
-> import System.IO                                    (hFlush, hPutStrLn)
+> import System.IO                                    (Handle, hFlush, hPutStrLn)
 > import Text.StringTemplate
 > import qualified Codec.Compression.GZip as G
 > import qualified Codec.Compression.BZip as B
+> import qualified Data.ByteString.Lazy   as L
 > import qualified Data.Map as M
 
 > main = do
@@ -70,13 +72,13 @@
 >     enterM response $ setM contentType ("application/x-gzip", Nothing)
 >     project <- getProject
 >     archive <- liftIO $ prepareTar project
->     sendBs $ G.compress archive
+>     sendChunked $ G.compress archive
 
 > downloadTbz = do
 >     enterM response $ setM contentType ("application/x-bz2", Nothing)
 >     project <- getProject
 >     archive <- liftIO $ prepareTar project
->     sendBs $ B.compress archive
+>     sendChunked $ B.compress archive
 
 > root = "/Users/Eric/Projects/E2E/data/06B"
 
@@ -92,7 +94,23 @@
 >     files   <- liftIO $ recurseDirectories [project]
 >     archive <- liftIO $ addFilesToArchive [] emptyArchive files
 >     enterM response $ setM contentType ("application/zip", Nothing)
->     sendBs $ fromArchive archive
+>     sendChunked $ fromArchive archive
+
+> sendChunked :: L.ByteString -> Handler ()
+> sendChunked bs = do
+>     enterM response $ setM (header "Transfer-Encoding") "chunked"
+>     send (flip chunked bs)
+
+> chunked         :: Handle -> L.ByteString -> IO ()
+> chunked s bytes
+>     | len == 0  = hPutStrLn s "0\r"
+>     | otherwise = do
+>         hPutStrLn s $ showHex len "\r"
+>         L.hPut s hd
+>         chunked s tl
+>   where
+>     (hd, tl) = L.splitAt 4096 bytes
+>     len      = L.length hd
 
 > hMultiPart             :: (t -> Handler (Maybe t)) -> t -> Handler ()
 > hMultiPart worker init = do
