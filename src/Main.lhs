@@ -19,6 +19,7 @@
 > import Network.Salvia.Handlers.Default              (hDefault)
 > import Network.Salvia.Handlers.Error                (hError)
 > import Network.Salvia.Handlers.ExtensionDispatcher  (hExtensionRouter)
+> import Network.Salvia.Handlers.File                 (hFileResource)
 > import Network.Salvia.Handlers.FileSystem           (hFileSystem)
 > import Network.Salvia.Handlers.PathRouter           (hPrefixRouter)
 > import Network.Salvia.Handlers.Redirect             (hRedirect)
@@ -69,10 +70,10 @@
 >     ] $ hError NotFound
 
 > stagedHandler = do
->     (_:path') <- getM (path % uri % request)
->     exists    <- liftIO $ doesFileExist path'
+>     path'  <- getM (path % uri % request)
+>     exists <- liftIO $ doesFileExist $ "staged" ++ path'
 >     if exists
->        then hFileSystem "staged"
+>        then hFileResource $ "staged" ++ path'
 >        else downloadHandler True
 
 > downloadHtml = do
