@@ -4,6 +4,7 @@
 
 > import Codec.Archive.Tar
 > import Codec.Archive.Zip
+> import Control.Concurrent                          (forkIO)
 > import Control.Concurrent.STM                      (atomically, newTVar)
 > import Control.Monad.State                         (get, runStateT)
 > import Control.Monad.Trans                         (lift, liftIO)
@@ -20,12 +21,13 @@
 > import Network.Salvia.Handlers.ExtensionDispatcher  (hExtensionRouter)
 > import Network.Salvia.Handlers.FileSystem           (hFileSystem)
 > import Network.Salvia.Handlers.PathRouter           (hPrefixRouter)
+> import Network.Salvia.Handlers.Redirect             (hRedirect)
 > import Network.Salvia.Handlers.Session              (SessionHandler, mkSessions)
 > import Network.Salvia.Httpd
 > import Network.Socket                               (inet_addr)
 > import Numeric                                      (showHex)
-> import System.Directory                             (doesDirectoryExist, getCurrentDirectory, setCurrentDirectory)
-> import System.FilePath                              ((</>), takeBaseName)
+> import System.Directory                             (doesDirectoryExist, doesFileExist)
+> import System.FilePath                              ((</>), (<.>), takeBaseName)
 > import System.FilePath.Glob
 > import System.IO                                    (Handle, hFlush, hPutStrLn)
 > import Text.StringTemplate
@@ -83,14 +85,11 @@
 
 Extract the project name from the request URI.
 
-> getProject :: Handler String
-> getProject = do
->     path' <- getM (path % uri % request)
->     return $ fst . break (== '.') . tail $ path'
+> getProject =
+>     getM (path % uri % request) >>= return . (fst . break (== '.') . tail)
 
 Determine if the user is permitted access to the requested project.
 
-> isAllowed         :: String -> IO Bool
 > isAllowed project = handleSqlError $ do
 >     cnn <- connect
 >     rst <- quickQuery' cnn "SELECT lastdate FROM projects WHERE name = ?" [toSql project]
@@ -112,29 +111,47 @@ return an access denied error.
 >        then handler project
 >        else hError Unauthorized
 
-> -- staged :: String -> (String -> Handler t) -> Handler t
-> -- staged project handler = do
->     -- params <- getM (queryParams % uri % request)
+Download an archive, optionally keeping a persistent copy of the tarball.
 
-> downloadTgz = withProject $ \project -> do
->     enterM response $ setM contentType ("application/x-gzip", Nothing)
->     archive <- liftIO $ prepareTar project
->     sendChunked $ G.compress archive
+> staged                     :: String -> String -> (String -> IO L.ByteString) -> Handler ()
+> staged suffix mime prepare = withProject $ \project -> do
+>     url   <- getM (uri % request)
+>     bytes <- liftIO $ prepare project
+>     case lookup "staged" $ queryParams url of
+>         Nothing -> downloadBytes mime bytes
+>         _       -> do
+>             let path' = "staged" </> project <.> suffix
+>             liftIO $ do
+>                 exists <- doesFileExist path'
+>                 if exists
+>                    then return undefined
+>                    else forkIO $ L.writeFile path' bytes
+>             hRedirect $ lset path ('/':path') url
 
-> downloadTbz = withProject $ \project -> do
->     enterM response $ setM contentType ("application/x-bz2", Nothing)
->     archive <- liftIO $ prepareTar project
->     sendChunked $ B.compress archive
+> downloadBytes mime bytes = do
+>     enterM response $ setM contentType (mime, Nothing)
+>     sendChunked bytes
 
-> downloadZip = withProject $ \project -> do
->     files   <- liftIO $ recurseDirectories [root </> project]
->     archive <- liftIO $ addFilesToArchive [] emptyArchive files
->     enterM response $ setM contentType ("application/zip", Nothing)
->     sendChunked . fromArchive . zipFixPaths $ archive
+> downloadTbz = staged ".tar.bz2" "application/x-bz2"  prepareTbz
+> downloadTgz = staged ".tar.gz2" "application/x-gzip" prepareTgz
+
+> prepareTbz = prepareTar B.compress
+> prepareTgz = prepareTar G.compress
+
+> prepareTar compress project = do
+>     archive <- prepareTar' project
+>     return $ compress archive
+
+> downloadZip = staged ".zip" "application/zip" prepareZip
+
+> prepareZip project = do
+>     files   <- recurseDirectories [root </> project]
+>     archive <- addFilesToArchive [] emptyArchive files
+>     return . fromArchive . zipFixPaths $ archive
 
 Construct a tar archive of the specified project.
 
-> prepareTar project = do
+> prepareTar' project = do
 >     files   <- liftIO $ recurseDirectories [root </> project]
 >     archive <- liftIO $ createTarArchive files
 >     return . writeTarArchive . tarFixPaths $ archive
@@ -148,6 +165,8 @@ Abstract out the physical location of the project.
 >         entry { entryHeader = fixHeader header }
 >     fixHeader header@(TarHeader { tarFileName = path }) =
 >         header { tarFileName = drop (length root) path }
+
+Abstract out the physical location of the project.
 
 > zipFixPaths archive@(Archive { zEntries = entries }) =
 >     archive { zEntries = map fixEntry entries }
