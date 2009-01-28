@@ -7,9 +7,12 @@
 > import Control.Concurrent.STM                      (atomically, newTVar)
 > import Control.Monad.State                         (get, runStateT)
 > import Control.Monad.Trans                         (lift, liftIO)
+> import Data.DateTime
 > import Data.List                                   (sort)
 > import Data.Maybe                                  (fromJust)
 > import Data.Record.Label
+> import Database.HDBC
+> import Database.HDBC.PostgreSQL
 > import Network.Protocol.Http                        hiding (hostname)
 > import Network.Protocol.Uri
 > import Network.Salvia.Handlers.Default              (hDefault)
@@ -30,6 +33,10 @@
 > import qualified Codec.Compression.BZip as B
 > import qualified Data.ByteString.Lazy   as L
 > import qualified Data.Map as M
+
+> root = "/data/gbt/raw"
+
+> connect = connectPostgreSQL "dbname=vault user=dave"
 
 > main = do
 >     addr <- inet_addr "0.0.0.0"
@@ -68,11 +75,10 @@
 >         else liftIO $ do
 >             ([projects], _) <- globDir [compile $ project ++ "*"] root
 >             return . render . setAttribute "projects" (sort . map takeBaseName $ projects) $ tmpl
->     enterM response $ setM contentType ("text/html", Just "utf-8")
->     enterM response $ setM contentLength (Just . fromIntegral . L.length $ bs)
+>     enterM response $ do
+>         setM contentType ("text/html", Just "utf-8")
+>         setM contentLength (Just . fromIntegral . L.length $ bs)
 >     sendBs bs
-
-> root = "/data/gbt/raw"
 
 > getProject :: Handler String
 > getProject = do
@@ -80,15 +86,32 @@
 >     let (project, _) = break (== '.') path'
 >     return project
 
-> downloadTgz = do
->     enterM response $ setM contentType ("application/x-gzip", Nothing)
+> isAllowed :: String -> IO Bool
+> isAllowed project = handleSqlError $ do
+>     cnn <- connect
+>     rst <- quickQuery' cnn "SELECT lastdate FROM projects WHERE name = ?" [toSql project]
+>     case rst of
+>         [[date]] -> do
+>             let date' = fromSeconds . fromSql $ date
+>             today <- getCurrentTime
+>             return $ today `diffMinutes` date' >= 365*24*60
+>         _ -> return False
+
+> withProject         :: (String -> Handler ()) -> Handler ()
+> withProject handler = do
 >     project <- getProject
+>     allowed <- liftIO $ isAllowed project
+>     case allowed of
+>         True  -> handler project
+>         False -> enterM response $ setM status Unauthorized
+
+> downloadTgz = withProject $ \project -> do
+>     enterM response $ setM contentType ("application/x-gzip", Nothing)
 >     archive <- liftIO $ prepareTar project
 >     sendChunked $ G.compress archive
 
-> downloadTbz = do
+> downloadTbz = withProject $ \project -> do
 >     enterM response $ setM contentType ("application/x-bz2", Nothing)
->     project <- getProject
 >     archive <- liftIO $ prepareTar project
 >     sendChunked $ B.compress archive
 
@@ -100,10 +123,9 @@
 >     setCurrentDirectory dir
 >     return $ writeTarArchive archive
 
-> downloadZip = do
+> downloadZip = withProject $ \project -> do
 >     dir <- liftIO getCurrentDirectory
 >     liftIO $ setCurrentDirectory root
->     project <- getProject
 >     files   <- liftIO $ recurseDirectories [project]
 >     archive <- liftIO $ addFilesToArchive [] emptyArchive files
 >     liftIO $ setCurrentDirectory dir
