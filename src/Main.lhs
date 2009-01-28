@@ -103,7 +103,7 @@
 >     allowed <- liftIO $ isAllowed project
 >     case allowed of
 >         True  -> handler project
->         False -> enterM response $ setM status Unauthorized
+>         False -> hError Unauthorized
 
 > downloadTgz = withProject $ \project -> do
 >     enterM response $ setM contentType ("application/x-gzip", Nothing)
