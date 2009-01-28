@@ -29,8 +29,8 @@
 > import System.FilePath.Glob
 > import System.IO                                    (Handle, hFlush, hPutStrLn)
 > import Text.StringTemplate
-> import qualified Codec.Compression.GZip as G
 > import qualified Codec.Compression.BZip as B
+> import qualified Codec.Compression.GZip as G
 > import qualified Data.ByteString.Lazy   as L
 > import qualified Data.Map as M
 
@@ -55,6 +55,7 @@
 > handler _ = hPrefixRouter [
 >       ("/download", downloadsHandler)
 >     , ("/public",   hFileSystem "public")
+>     , ("/staged",   hFileSystem "staged")
 >     ] $ hError NotFound
 
 > downloadsHandler = hExtensionRouter [
@@ -80,13 +81,16 @@
 >         setM contentLength (Just . fromIntegral . L.length $ bs)
 >     sendBs bs
 
+Extract the project name from the request URI.
+
 > getProject :: Handler String
 > getProject = do
->     (_:path') <- getM (path % uri % request)
->     let (project, _) = break (== '.') path'
->     return project
+>     path' <- getM (path % uri % request)
+>     return $ fst . break (== '.') . tail $ path'
 
-> isAllowed :: String -> IO Bool
+Determine if the user is permitted access to the requested project.
+
+> isAllowed         :: String -> IO Bool
 > isAllowed project = handleSqlError $ do
 >     cnn <- connect
 >     rst <- quickQuery' cnn "SELECT lastdate FROM projects WHERE name = ?" [toSql project]
@@ -97,13 +101,20 @@
 >             return $ today `diffMinutes` date' >= 365*24*60
 >         _ -> return False
 
+Conditionally---checking access policy---run a download handler or
+return an access denied error.
+
 > withProject         :: (String -> Handler ()) -> Handler ()
 > withProject handler = do
 >     project <- getProject
 >     allowed <- liftIO $ isAllowed project
->     case allowed of
->         True  -> handler project
->         False -> hError Unauthorized
+>     if allowed
+>        then handler project
+>        else hError Unauthorized
+
+> -- staged :: String -> (String -> Handler t) -> Handler t
+> -- staged project handler = do
+>     -- params <- getM (queryParams % uri % request)
 
 > downloadTgz = withProject $ \project -> do
 >     enterM response $ setM contentType ("application/x-gzip", Nothing)
@@ -115,22 +126,34 @@
 >     archive <- liftIO $ prepareTar project
 >     sendChunked $ B.compress archive
 
-> prepareTar project = do
->     dir <- getCurrentDirectory
->     setCurrentDirectory root
->     files   <- liftIO $ recurseDirectories [project]
->     archive <- liftIO $ createTarArchive files
->     setCurrentDirectory dir
->     return $ writeTarArchive archive
-
 > downloadZip = withProject $ \project -> do
->     dir <- liftIO getCurrentDirectory
->     liftIO $ setCurrentDirectory root
->     files   <- liftIO $ recurseDirectories [project]
+>     files   <- liftIO $ recurseDirectories [root </> project]
 >     archive <- liftIO $ addFilesToArchive [] emptyArchive files
->     liftIO $ setCurrentDirectory dir
 >     enterM response $ setM contentType ("application/zip", Nothing)
->     sendChunked $ fromArchive archive
+>     sendChunked . fromArchive . zipFixPaths $ archive
+
+Construct a tar archive of the specified project.
+
+> prepareTar project = do
+>     files   <- liftIO $ recurseDirectories [root </> project]
+>     archive <- liftIO $ createTarArchive files
+>     return . writeTarArchive . tarFixPaths $ archive
+
+Abstract out the physical location of the project.
+
+> tarFixPaths archive@(TarArchive { archiveEntries = entries }) =
+>     archive { archiveEntries = map fixEntry entries }
+>   where
+>     fixEntry entry@(TarEntry { entryHeader = header }) =
+>         entry { entryHeader = fixHeader header }
+>     fixHeader header@(TarHeader { tarFileName = path }) =
+>         header { tarFileName = drop (length root) path }
+
+> zipFixPaths archive@(Archive { zEntries = entries }) =
+>     archive { zEntries = map fixEntry entries }
+>   where
+>     fixEntry entry@(Entry { eRelativePath = path }) =
+>         entry { eRelativePath = drop (length root + 1) path }
 
 > sendChunked :: L.ByteString -> Handler ()
 > sendChunked bs = do
