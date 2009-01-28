@@ -55,18 +55,25 @@
 
 > handler   :: SessionHandler () ()
 > handler _ = hPrefixRouter [
->       ("/download", downloadsHandler)
+>       ("/download", downloadHandler False)
 >     , ("/public",   hFileSystem "public")
->     , ("/staged",   hFileSystem "staged")
+>     , ("/staged",   stagedHandler)
 >     ] $ hError NotFound
 
-> downloadsHandler = hExtensionRouter [
+> downloadHandler staging = hExtensionRouter [
 >       (Nothing,     downloadHtml)
->     , (Just "bz2",  downloadTbz)
+>     , (Just "bz2",  downloadTbz staging)
 >     , (Just "html", downloadHtml)
->     , (Just "gz",   downloadTgz)
->     , (Just "zip",  downloadZip)
+>     , (Just "gz",   downloadTgz staging)
+>     , (Just "zip",  downloadZip staging)
 >     ] $ hError NotFound
+
+> stagedHandler = do
+>     (_:path') <- getM (path % uri % request)
+>     exists    <- liftIO $ doesFileExist path'
+>     if exists
+>        then hFileSystem "staged"
+>        else downloadHandler True
 
 > downloadHtml = do
 >     source  <- liftIO $ readFile "templates/project_name.html"
@@ -113,20 +120,17 @@ return an access denied error.
 
 Download an archive, optionally keeping a persistent copy of the tarball.
 
-> staged                     :: String -> String -> (String -> IO L.ByteString) -> Handler ()
-> staged suffix mime prepare = withProject $ \project -> do
+> staged :: String -> String -> (String -> IO L.ByteString) -> Bool -> Handler ()
+> staged suffix mime prepare staging = withProject $ \project -> do
 >     url   <- getM (uri % request)
 >     bytes <- liftIO $ prepare project
->     case lookup "staged" $ queryParams url of
->         Nothing -> downloadBytes mime bytes
->         _       -> do
->             let path' = "staged" </> project <.> suffix
->             liftIO $ do
->                 exists <- doesFileExist path'
->                 if exists
->                    then return undefined
->                    else forkIO $ L.writeFile path' bytes
->             hRedirect $ lset path ('/':path') url
+>     let path' = "staged" </> project <.> suffix
+>     if staging
+>        then do
+>            liftIO $ forkIO $ L.writeFile path' bytes
+>            hRedirect $ lset path ('/':path') url
+>        else
+>            downloadBytes mime bytes
 
 > downloadBytes mime bytes = do
 >     enterM response $ setM contentType (mime, Nothing)
