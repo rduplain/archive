@@ -26,7 +26,7 @@
 > import Network.Salvia.Httpd
 > import Network.Socket                               (inet_addr)
 > import Numeric                                      (showHex)
-> import System.Directory                             (doesDirectoryExist, getCurrentDirectory, setCurrentDirectory)
+> import System.Directory                             (doesDirectoryExist, doesFileExist)
 > import System.FilePath                              ((</>), (<.>), takeBaseName)
 > import System.FilePath.Glob
 > import System.IO                                    (Handle, hFlush, hPutStrLn)
@@ -121,7 +121,11 @@ Download an archive, optionally keeping a persistent copy of the tarball.
 >         Nothing -> downloadBytes mime bytes
 >         _       -> do
 >             let path' = "staged" </> project <.> suffix
->             liftIO $ forkIO $ L.writeFile path' bytes
+>             liftIO $ do
+>                 exists <- doesFileExist path'
+>                 if exists
+>                    then return undefined
+>                    else forkIO $ L.writeFile path' bytes
 >             hRedirect $ lset path ('/':path') url
 
 > downloadBytes mime bytes = do
