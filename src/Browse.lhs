@@ -1,17 +1,18 @@
 > module Browse (browseHandler) where
 
-> import Control.Monad.Reader   (asks)
-> import Control.Monad.Trans    (liftIO)
-> import Data.Fits.FitsIO       (runFits)
-> import Data.Fits.FQL          (keywords, runFQL)
-> import Data.Fits.GBT          (forEachScan, gbtScans, with)
-> import Data.Fits.GBT.ScanLog  (gbtProject)
+> import Control.Monad.Reader                  (asks)
+> import Control.Monad.Trans                   (liftIO)
+> import Data.Fits.FQL                         (keywords, runFQL)
+> import Data.Fits.FitsIO                      (runFits)
+> import Data.Fits.GBT                         (forEachScan, gbtScans, with)
+> import Data.Fits.GBT.ScanLog                 (gbtProject)
 > import Data.Record.Label
 > import Network.Protocol.Http
+> import Network.Salvia.Handlers.MethodRouter  (hMethodRouter, hPOST)
 > import Network.Salvia.Httpd
-> import Project                (root, withProject)
-> import System.FilePath        ((</>))
-> import Text.XML.HaXml         hiding (with)
+> import Project                               (root, withProject)
+> import System.FilePath                       ((</>))
+> import Text.XML.HaXml                        hiding (with)
 
 > cols = [ "OBJECT"
 >        , "OBSID"
@@ -27,18 +28,37 @@
 >        ]
 
 > browseHandler :: Handler ()
-> browseHandler = withProject $ \project -> do
+> browseHandler = hMethodRouter [
+>       (POST, browsePOST)
+>     ] $ browseGET
+
+> browseGET = withProject $ \project -> do
 >     scans <- liftIO $ scanDescriptions project
->     let bytes = show . htmlprint . formatScans scans $ CElem (Elem "" [] [])
+>     let bytes = show . htmlprint . formatForm scans $ CElem (Elem "" [] [])
 >     enterM response $ do
 >         setM contentType ("text/html", Just "utf-8")
 >         setM contentLength (Just . fromIntegral . length $ bytes)
 >     sendStr bytes
 
-> formatScans scans = htable [
->       mkElem "thead" [hrow [mkElem "th" [literal c] | c <- "SCAN" : cols]]
->     , mkElem "tbody" [hrow $ (hcol [literal . show $ n]) : [hcol [literal c] | c <- cs] | (n, cs) <- scans]
+> browsePOST = do
+>     bytes <- enterM request $ getM body
+>     enterM response $ setM contentType ("text/html", Just "utf-8")
+>     sendStr bytes
+
+> formatForm scans = mkElemAttr "form" [("method", literal "POST")] [
+>       formatScans scans
+>     , mkElemAttr "input" [("type", literal "submit"), ("value", literal "Download")] []
 >     ]
+      
+> formatScans scans = htable [
+>       mkElem "thead" [hrow [mkElem "th" [literal c] | c <- "" : "SCAN" : cols]]
+>     , mkElem "tbody" [formatRow scan | scan <- scans]
+>     ]
+
+> formatRow (n, cs) = hrow $
+>       hcol [mkElemAttr "input" [("type", literal "checkbox"), ("name", literal "scan"), ("value", literal . show $ n)] []]
+>     : hcol [literal . show $ n]
+>     : [hcol [literal c] | c <- cs]
 
 > scanDescriptions         :: String -> IO [(Int, [String])]
 > scanDescriptions project = do

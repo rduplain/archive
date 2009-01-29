@@ -105,8 +105,8 @@ Download an archive, optionally keeping a persistent copy of the tarball.
 >     enterM response $ setM contentType (mime, Nothing)
 >     sendChunked bytes
 
-> downloadTbz = staged ".tar.bz2" "application/x-bz2"  prepareTbz
-> downloadTgz = staged ".tar.gz2" "application/x-gzip" prepareTgz
+> downloadTbz = staged ".tar.bz2" "application/x-bzip2" prepareTbz
+> downloadTgz = staged ".tar.gz2" "application/x-gzip"  prepareTgz
 
 > prepareTbz = prepareTar B.compress
 > prepareTgz = prepareTar G.compress
