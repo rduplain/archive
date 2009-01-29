@@ -2,6 +2,7 @@
 
 > module Main where
 
+> import Archive
 > import Browse
 > import Codec.Archive.Tar
 > import Codec.Archive.Zip
@@ -12,6 +13,7 @@
 > import Data.List                                   (sort)
 > import Data.Maybe                                  (fromJust)
 > import Data.Record.Label
+> import Handlers
 > import Network.Protocol.Http                        hiding (hostname)
 > import Network.Protocol.Uri
 > import Network.Salvia.Handlers.Default              (hDefault)
@@ -128,72 +130,3 @@ Construct a tar archive of the specified project.
 >     files   <- liftIO $ recurseDirectories [root </> project]
 >     archive <- liftIO $ createTarArchive files
 >     return . writeTarArchive . tarFixPaths $ archive
-
-Abstract out the physical location of the project.
-
-> tarFixPaths archive@(TarArchive { archiveEntries = entries }) =
->     archive { archiveEntries = map fixEntry entries }
->   where
->     fixEntry entry@(TarEntry { entryHeader = header }) =
->         entry { entryHeader = fixHeader header }
->     fixHeader header@(TarHeader { tarFileName = path }) =
->         header { tarFileName = drop (length root) path }
-
-Abstract out the physical location of the project.
-
-> zipFixPaths archive@(Archive { zEntries = entries }) =
->     archive { zEntries = map fixEntry entries }
->   where
->     fixEntry entry@(Entry { eRelativePath = path }) =
->         entry { eRelativePath = drop (length root + 1) path }
-
-> sendChunked :: L.ByteString -> Handler ()
-> sendChunked bs = do
->     enterM response $ setM (header "Transfer-Encoding") "chunked"
->     send (flip chunked bs)
-
-> chunked         :: Handle -> L.ByteString -> IO ()
-> chunked s bytes
->     | len == 0  = hPutStrLn s "0\r"
->     | otherwise = do
->         hPutStrLn s $ showHex len "\r"
->         L.hPut s hd
->         chunked s tl
->   where
->     (hd, tl) = L.splitAt 4096 bytes
->     len      = L.length hd
-
-> hMultiPart             :: (t -> Handler (Maybe t)) -> t -> Handler ()
-> hMultiPart worker init = do
->     ctx <- get
->     enterM response $ setM contentType ("multipart/x-mixed-replace; boundary=\"rn9012\"", Nothing)
->     sendStrLn "--rn9012"
->     send hFlush
->     send $ multipart ctx init
->   where
->     multipart ctx token s = do
->         (token', _) <- runStateT (hDefault' token) ctx
->         case token' of
->             Just t  -> multipart ctx t s
->             Nothing -> return ()
->     hDefault' token = do
->         reset
->         token' <- worker token
->         sendStrLn "--rn9012"
->         send hFlush
->         hPrinter'
->         return token'
->     hPrinter' = do
->         sendHeaders'
->         s <- getM sock
->         q <- getM queue
->         liftIO $ mapM_ ($ s) q
->     sendHeaders' = do
->         hs <- enterM response $ getM headers
->         s  <- getM sock
->         liftIO $ sendHeader' "Content-Type" hs s
->         liftIO $ putStrLn ""
->     sendHeader' hdr hs s = do
->         case M.lookup hdr hs of
->             Just val -> hPutStrLn s $ hdr ++ ": " ++ val
->             Nothing  -> return ()

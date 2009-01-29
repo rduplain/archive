@@ -1,5 +1,8 @@
 > module Browse (browseHandler) where
 
+> import Archive
+> import Codec.Archive.Tar
+> import Codec.Compression.BZip
 > import Control.Monad.Reader                  (asks)
 > import Control.Monad.Trans                   (liftIO)
 > import Data.Fits.FQL                         (keywords, runFQL)
@@ -8,6 +11,7 @@
 > import Data.Fits.GBT.ScanLog                 (gbtProject)
 > import Data.List                             (nub)
 > import Data.Record.Label
+> import Handlers
 > import Network.Protocol.Http
 > import Network.Protocol.Uri                  (parseQueryParams)
 > import Network.Salvia.Handlers.MethodRouter  (hMethodRouter, hPOST)
@@ -38,8 +42,9 @@
 > browsePOST = withProject $ \project -> do
 >     scans <- collectScans
 >     paths <- liftIO $ collectFiles project scans
->     enterM response $ setM contentType ("text/plain", Nothing)
->     sendStrLn . unlines $ paths
+>     bytes <- liftIO $ prepareDownload paths
+>     enterM response $ setM contentType ("application/x-bzip2", Nothing)
+>     sendChunked bytes
 
 > collectScans :: Handler [Int]
 > collectScans = do
@@ -53,6 +58,10 @@
 >     env <- gbtProject $ root </> project
 >     let paths = [root </> project </> instrument </> file | (scan, files) <- gbtScans env, scan `elem` scans, (instrument, file) <- files]
 >     return $ (root </> project </> "ScanLog.fits") : nub paths
+
+> prepareDownload files = do
+>     archive <- createTarArchive files
+>     return . compress . writeTarArchive . tarFixPaths $ archive
 
 > browseGET = withProject $ \project -> do
 >     scans <- liftIO $ scanDescriptions project
