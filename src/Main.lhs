@@ -2,18 +2,16 @@
 
 > module Main where
 
+> import Browse
 > import Codec.Archive.Tar
 > import Codec.Archive.Zip
 > import Control.Concurrent                          (forkIO)
 > import Control.Concurrent.STM                      (atomically, newTVar)
 > import Control.Monad.State                         (get, runStateT)
 > import Control.Monad.Trans                         (lift, liftIO)
-> import Data.DateTime
 > import Data.List                                   (sort)
 > import Data.Maybe                                  (fromJust)
 > import Data.Record.Label
-> import Database.HDBC
-> import Database.HDBC.PostgreSQL
 > import Network.Protocol.Http                        hiding (hostname)
 > import Network.Protocol.Uri
 > import Network.Salvia.Handlers.Default              (hDefault)
@@ -27,6 +25,7 @@
 > import Network.Salvia.Httpd
 > import Network.Socket                               (inet_addr)
 > import Numeric                                      (showHex)
+> import Project
 > import System.Directory                             (doesDirectoryExist, doesFileExist)
 > import System.FilePath                              ((</>), (<.>), takeBaseName)
 > import System.FilePath.Glob
@@ -36,10 +35,6 @@
 > import qualified Codec.Compression.GZip as G
 > import qualified Data.ByteString.Lazy   as L
 > import qualified Data.Map as M
-
-> root = "/data/gbt/raw"
-
-> connect = connectPostgreSQL "dbname=vault user=dave"
 
 > main = do
 >     addr <- inet_addr "0.0.0.0"
@@ -56,7 +51,8 @@
 
 > handler   :: SessionHandler () ()
 > handler _ = hPrefixRouter [
->       ("/download", downloadHandler False)
+>       ("/browse",   browseHandler)
+>     , ("/download", downloadHandler False)
 >     , ("/public",   hFileSystem "public")
 >     , ("/staged",   stagedHandler)
 >     ] $ hError NotFound
@@ -90,34 +86,6 @@
 >         setM contentType ("text/html", Just "utf-8")
 >         setM contentLength (Just . fromIntegral . L.length $ bs)
 >     sendBs bs
-
-Extract the project name from the request URI.
-
-> getProject =
->     getM (path % uri % request) >>= return . (fst . break (== '.') . tail)
-
-Determine if the user is permitted access to the requested project.
-
-> isAllowed project = handleSqlError $ do
->     cnn <- connect
->     rst <- quickQuery' cnn "SELECT lastdate FROM projects WHERE name = ?" [toSql project]
->     case rst of
->         [[date]] -> do
->             let date' = fromSeconds . fromSql $ date
->             today <- getCurrentTime
->             return $ today `diffMinutes` date' >= 365*24*60
->         _ -> return False
-
-Conditionally---checking access policy---run a download handler or
-return an access denied error.
-
-> withProject         :: (String -> Handler ()) -> Handler ()
-> withProject handler = do
->     project <- getProject
->     allowed <- liftIO $ isAllowed project
->     if allowed
->        then handler project
->        else hError Unauthorized
 
 Download an archive, optionally keeping a persistent copy of the tarball.
 
