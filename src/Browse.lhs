@@ -8,11 +8,13 @@
 > import Data.Fits.GBT.ScanLog                 (gbtProject)
 > import Data.Record.Label
 > import Network.Protocol.Http
+> import Network.Protocol.Uri                  (parseQueryParams)
 > import Network.Salvia.Handlers.MethodRouter  (hMethodRouter, hPOST)
 > import Network.Salvia.Httpd
 > import Project                               (root, withProject)
 > import System.FilePath                       ((</>))
 > import Text.XML.HaXml                        hiding (with)
+> import qualified Data.ByteString.Lazy.Char8 as L
 
 > cols = [ "OBJECT"
 >        , "OBSID"
@@ -41,9 +43,10 @@
 >     sendStr bytes
 
 > browsePOST = do
->     bytes <- enterM request $ getM body
->     enterM response $ setM contentType ("text/html", Just "utf-8")
->     sendStr bytes
+>     bytes <- contents
+>     let params = bytes >>= parseQueryParams . L.unpack
+>     enterM response $ setM contentType ("text/plain", Nothing)
+>     sendStr $ show params
 
 > formatForm scans = mkElemAttr "form" [("method", literal "POST")] [
 >       formatScans scans
