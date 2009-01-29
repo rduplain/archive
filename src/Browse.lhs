@@ -43,7 +43,9 @@
 >     scans <- collectScans
 >     paths <- liftIO $ collectFiles project scans
 >     bytes <- liftIO $ prepareDownload paths
->     enterM response $ setM contentType ("application/x-bzip2", Nothing)
+>     enterM response $ do
+>         setM contentType ("application/x-bzip2", Nothing)
+>         setM (header "Content-Disposition") $ "attachment; filename=\"" ++ project ++ ".tar.bz2\""
 >     sendChunked bytes
 
 > collectScans :: Handler [Int]
