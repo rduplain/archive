@@ -6,6 +6,7 @@
 > import Data.Fits.FitsIO                      (runFits)
 > import Data.Fits.GBT                         (forEachScan, gbtScans, with)
 > import Data.Fits.GBT.ScanLog                 (gbtProject)
+> import Data.List                             (nub)
 > import Data.Record.Label
 > import Network.Protocol.Http
 > import Network.Protocol.Uri                  (parseQueryParams)
@@ -34,6 +35,25 @@
 >       (POST, browsePOST)
 >     ] $ browseGET
 
+> browsePOST = withProject $ \project -> do
+>     scans <- collectScans
+>     paths <- liftIO $ collectFiles project scans
+>     enterM response $ setM contentType ("text/plain", Nothing)
+>     sendStrLn . unlines $ paths
+
+> collectScans :: Handler [Int]
+> collectScans = do
+>     bytes <- contents
+>     case bytes >>= parseQueryParams . L.unpack of
+>         Just params -> return [read v | (k, Just v) <- params, k == "scan"]
+>         Nothing     -> return []
+
+> collectFiles :: String -> [Int] -> IO [FilePath]
+> collectFiles project scans = do
+>     env <- gbtProject $ root </> project
+>     let paths = [root </> project </> instrument </> file | (scan, files) <- gbtScans env, scan `elem` scans, (instrument, file) <- files]
+>     return $ (root </> project </> "ScanLog.fits") : nub paths
+
 > browseGET = withProject $ \project -> do
 >     scans <- liftIO $ scanDescriptions project
 >     let bytes = show . htmlprint . formatForm scans $ CElem (Elem "" [] [])
@@ -41,12 +61,6 @@
 >         setM contentType ("text/html", Just "utf-8")
 >         setM contentLength (Just . fromIntegral . length $ bytes)
 >     sendStr bytes
-
-> browsePOST = do
->     bytes <- contents
->     let params = bytes >>= parseQueryParams . L.unpack
->     enterM response $ setM contentType ("text/plain", Nothing)
->     sendStr $ show params
 
 > formatForm scans = mkElemAttr "form" [("method", literal "POST")] [
 >       formatScans scans
