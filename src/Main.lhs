@@ -10,7 +10,7 @@
 > import Control.Concurrent.STM                      (atomically, newTVar)
 > import Control.Monad.State                         (get, runStateT)
 > import Control.Monad.Trans                         (lift, liftIO)
-> import Data.List                                   (sort)
+> import Data.List                                   (isPrefixOf, sort)
 > import Data.Maybe                                  (fromJust)
 > import Data.Record.Label
 > import Handlers
@@ -28,9 +28,8 @@
 > import Network.Socket                               (inet_addr)
 > import Numeric                                      (showHex)
 > import Project
-> import System.Directory                             (doesDirectoryExist, doesFileExist)
+> import System.Directory                             (doesDirectoryExist, doesFileExist, getDirectoryContents)
 > import System.FilePath                              ((</>), (<.>), takeBaseName)
-> import System.FilePath.Glob
 > import System.IO                                    (Handle, hFlush, hPutStrLn)
 > import Text.StringTemplate
 > import qualified Codec.Compression.BZip as B
@@ -82,7 +81,7 @@
 >     bs <- if exists
 >         then return . render . setAttribute "project" project $ tmpl
 >         else liftIO $ do
->             ([projects], _) <- globDir [compile $ project ++ "*"] root
+>             projects <- fmap (filter (project `isPrefixOf`)) . getDirectoryContents $ root
 >             return . render . setAttribute "projects" (sort . map takeBaseName $ projects) $ tmpl
 >     enterM response $ do
 >         setM contentType ("text/html", Just "utf-8")
