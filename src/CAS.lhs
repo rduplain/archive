@@ -17,7 +17,7 @@ Location of our Central Authentication Service.
 Session type that contains a reference to the current resource
 and, optionally, the name of the currently authenticated user.
 
-> data CAS = CAS String (Maybe String)
+> data CAS = CAS String (Maybe String) deriving Show
 
 Read the reference to the current resource.
 
@@ -59,7 +59,7 @@ Save the name of the current resource.
 > saveResource         :: SessionHandler CAS ()
 > saveResource session = do
 >     url <- getM $ path % uri % request
->     flip putResource session $ "http://localhost:9000" ++ url
+>     flip putResource session $ "http://espresso.cv.nrao.edu:9000" ++ url
 
 Top-level handler that is responsible for processing CAS authentication.
 
