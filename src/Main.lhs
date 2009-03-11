@@ -6,12 +6,12 @@
 > import Browse
 > import Codec.Archive.Tar
 > import Codec.Archive.Zip
-> import Control.Concurrent                          (forkIO)
-> import Control.Concurrent.STM                      (atomically, newTVar)
-> import Control.Monad.State                         (get, runStateT)
-> import Control.Monad.Trans                         (lift, liftIO)
-> import Data.List                                   (isPrefixOf, sort)
-> import Data.Maybe                                  (fromJust)
+> import Control.Concurrent                           (forkIO)
+> import Control.Concurrent.STM                       (atomically, newTVar)
+> import Control.Monad.State                          (get, runStateT)
+> import Control.Monad.Trans                          (lift, liftIO)
+> import Data.List                                    (isPrefixOf, sort)
+> import Data.Maybe                                   (fromJust)
 > import Data.Record.Label
 > import Handlers
 > import Network.Protocol.Http                        hiding (hostname)
@@ -82,7 +82,7 @@
 >         then return . render . setAttribute "project" project $ tmpl
 >         else liftIO $ do
 >             projects <- fmap (filter (project `isPrefixOf`)) . getDirectoryContents $ root
->             return . render . setAttribute "projects" (sort . map takeBaseName $ projects) $ tmpl
+>             return . render . setAttribute "projects" (sort . map takeBaseName $ projects) . setAttribute "project" project $ tmpl
 >     enterM response $ do
 >         setM contentType ("text/html", Just "utf-8")
 >         setM contentLength (Just . fromIntegral . L.length $ bs)
