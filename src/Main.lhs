@@ -17,10 +17,9 @@
 > import Handlers
 > import Network.Curl                                 (withCurlDo)
 > import Network.Protocol.Http                        hiding (hostname)
-> import Network.Protocol.Mime
 > import Network.Protocol.Uri
 > import Network.Salvia.Handlers.Default              (hDefault)
-> import Network.Salvia.Handlers.Error
+> import Network.Salvia.Handlers.Error                (hError)
 > import Network.Salvia.Handlers.ExtensionDispatcher  (hExtensionRouter)
 > import Network.Salvia.Handlers.File                 (hFileResource)
 > import Network.Salvia.Handlers.FileSystem           (hFileSystem)
@@ -33,7 +32,7 @@
 > import Project
 > import System.Directory                             (doesDirectoryExist, doesFileExist, getDirectoryContents)
 > import System.FilePath                              ((</>), (<.>), takeBaseName)
-> import System.IO
+> import System.IO                                    (Handle, hFlush, hPutStrLn)
 > import Text.StringTemplate
 > import qualified Codec.Compression.BZip as B
 > import qualified Codec.Compression.GZip as G
@@ -73,7 +72,7 @@
 >     path'  <- getM (path % uri % request)
 >     exists <- liftIO $ doesFileExist $ "staged" ++ path'
 >     if exists
->        then fileResource $ "staged" ++ path'
+>        then hFileResource $ "staged" ++ path'
 >        else downloadHandler True session
 
 > downloadHtml = do
@@ -104,14 +103,6 @@ Download an archive, optionally keeping a persistent copy of the tarball.
 >            hRedirect $ lset path ('/':path') url
 >        else
 >            downloadBytes mime bytes
-
-> fileResource :: ResourceHandler ()
-> fileResource file = do
->   let mime = maybe defaultMime id $ (parseURI file >>= mimetype . lget path)
->   safeIO (openBinaryFile file ReadMode)
->     $ \fd -> do
->       bytes <- liftIO $ L.hGetContents fd
->       downloadBytes mime bytes
 
 > downloadBytes mime bytes = do
 >     enterM response $ setM contentType (mime, Nothing)
