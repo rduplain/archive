@@ -1,6 +1,7 @@
 > module Browse (browseHandler) where
 
 > import Archive
+> import CAS
 > import Codec.Archive.Tar
 > import Codec.Compression.BZip
 > import Control.Monad.Reader                  (asks)
@@ -15,6 +16,7 @@
 > import Network.Protocol.Http
 > import Network.Protocol.Uri                  (parseQueryParams)
 > import Network.Salvia.Handlers.MethodRouter  (hMethodRouter, hPOST)
+> import Network.Salvia.Handlers.Session
 > import Network.Salvia.Httpd
 > import Project                               (root, withProject)
 > import System.FilePath                       ((</>))
@@ -34,12 +36,12 @@
 >        , "LASTOFF"
 >        ]
 
-> browseHandler :: Handler ()
-> browseHandler = hMethodRouter [
->       (POST, browsePOST)
->     ] $ browseGET
+> browseHandler         :: SessionHandler CAS ()
+> browseHandler session = hMethodRouter [
+>       (POST, browsePOST session)
+>     ] $ browseGET session
 
-> browsePOST = withProject $ \project -> do
+> browsePOST session = flip withProject session $ \project _ -> do
 >     scans <- collectScans
 >     paths <- liftIO $ collectFiles project scans
 >     bytes <- liftIO $ prepareDownload paths
@@ -65,7 +67,7 @@
 >     archive <- createTarArchive files
 >     return . compress . writeTarArchive . tarFixPaths $ archive
 
-> browseGET = withProject $ \project -> do
+> browseGET session = flip withProject session $ \project _ -> do
 >     scans <- liftIO $ scanDescriptions project
 >     let bytes = show . htmlprint . formatForm scans $ CElem (Elem "" [] [])
 >     enterM response $ do

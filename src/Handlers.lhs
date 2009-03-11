@@ -3,13 +3,14 @@
 > import Control.Monad.State                         (get, runStateT)
 > import Control.Monad.Trans                         (lift, liftIO)
 > import Data.Record.Label
-> import Network.Protocol.Http                        hiding (hostname)
+> import Network.Protocol.Http                       hiding (hostname)
 > import Network.Protocol.Uri
 > import Network.Salvia.Httpd
-> import Numeric                                      (showHex)
-> import System.IO                                    (Handle, hFlush, hPutStrLn)
+> import Numeric                                     (showHex)
+> import System.IO                                   (Handle, hFlush, hPutStrLn)
 > import qualified Data.ByteString.Lazy   as L
 > import qualified Data.Map as M
+> import qualified Network.URI as U
 
 > sendChunked :: L.ByteString -> Handler ()
 > sendChunked bs = do

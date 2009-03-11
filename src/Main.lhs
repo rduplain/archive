@@ -4,6 +4,7 @@
 
 > import Archive
 > import Browse
+> import CAS
 > import Codec.Archive.Tar
 > import Codec.Archive.Zip
 > import Control.Concurrent                           (forkIO)
@@ -14,6 +15,7 @@
 > import Data.Maybe                                   (fromJust)
 > import Data.Record.Label
 > import Handlers
+> import Network.Curl                                 (withCurlDo)
 > import Network.Protocol.Http                        hiding (hostname)
 > import Network.Protocol.Uri
 > import Network.Salvia.Handlers.Default              (hDefault)
@@ -37,7 +39,7 @@
 > import qualified Data.ByteString.Lazy   as L
 > import qualified Data.Map as M
 
-> main = do
+> main = withCurlDo $ do
 >     addr <- inet_addr "0.0.0.0"
 >     cfg  <- defaultConfig
 >     let cfg' = cfg {
@@ -50,28 +52,28 @@
 >     sessions <- mkSessions
 >     start cfg' $ hDefault counter sessions handler
 
-> handler   :: SessionHandler () ()
-> handler _ = hPrefixRouter [
->       ("/browse",   browseHandler)
->     , ("/download", downloadHandler False)
->     , ("/public",   hFileSystem "public")
->     , ("/staged",   stagedHandler)
+> handler         :: SessionHandler CAS ()
+> handler session = flip casHandler session $ \session -> hPrefixRouter [
+>       ("/browse",    browseHandler session)
+>     , ("/download",  downloadHandler False session)
+>     , ("/public",    hFileSystem "public")
+>     , ("/staged",    stagedHandler session)
 >     ] $ hError NotFound
 
-> downloadHandler staging = hExtensionRouter [
+> downloadHandler staging session = hExtensionRouter [
 >       (Nothing,     downloadHtml)
->     , (Just "bz2",  downloadTbz staging)
+>     , (Just "bz2",  downloadTbz staging session)
 >     , (Just "html", downloadHtml)
->     , (Just "gz",   downloadTgz staging)
->     , (Just "zip",  downloadZip staging)
+>     , (Just "gz",   downloadTgz staging session)
+>     , (Just "zip",  downloadZip staging session)
 >     ] $ hError NotFound
 
-> stagedHandler = do
+> stagedHandler session = do
 >     path'  <- getM (path % uri % request)
 >     exists <- liftIO $ doesFileExist $ "staged" ++ path'
 >     if exists
 >        then hFileResource $ "staged" ++ path'
->        else downloadHandler True
+>        else downloadHandler True session
 
 > downloadHtml = do
 >     source  <- liftIO $ readFile "templates/project_name.html"
@@ -90,8 +92,8 @@
 
 Download an archive, optionally keeping a persistent copy of the tarball.
 
-> staged :: String -> String -> (String -> IO L.ByteString) -> Bool -> Handler ()
-> staged suffix mime prepare staging = withProject $ \project -> do
+> staged :: String -> String -> (String -> IO L.ByteString) -> Bool -> SessionHandler CAS ()
+> staged suffix mime prepare staging session = flip withProject session $ \project _ -> do
 >     url   <- getM (uri % request)
 >     bytes <- liftIO $ prepare project
 >     let path' = "staged" </> project <.> suffix
