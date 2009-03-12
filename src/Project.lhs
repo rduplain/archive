@@ -2,7 +2,7 @@
 
 > import CAS
 > import Control.Monad.Trans            (liftIO)
-> import Data.DateTime                  (diffMinutes, getCurrentTime, fromSeconds)
+> import Data.DateTime                  (diffMinutes, getCurrentTime, fromSqlString)
 > import Database.HDBC
 > import Database.HDBC.PostgreSQL       (connectPostgreSQL)
 > import Data.Record.Label
@@ -28,7 +28,7 @@ Determine if the user is permitted access to the requested project.
 >     rst <- quickQuery' cnn "SELECT lastdate FROM projects WHERE name = ?" [toSql project]
 >     case rst of
 >         [[date]] -> do
->             let date' = fromSeconds . fromSql $ date
+>             let Just date' = fromSqlString . fromSql $ date
 >             today <- getCurrentTime
 >             return $ today `diffMinutes` date' >= 365*24*60
 >         _ -> return False

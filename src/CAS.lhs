@@ -12,7 +12,7 @@
 
 Location of our Central Authentication Service.
 
-> cas = "https://mirror.nrao.edu:8443/cas"
+> cas = "https://my.nrao.edu/cas"
 
 Session type that contains a reference to the current resource
 and, optionally, the name of the currently authenticated user.
@@ -59,7 +59,7 @@ Save the name of the current resource.
 > saveResource         :: SessionHandler CAS ()
 > saveResource session = do
 >     url <- getM $ path % uri % request
->     flip putResource session $ "http://espresso.cv.nrao.edu:9000" ++ url
+>     flip putResource session $ "http://archive.cv.nrao.edu" ++ url
 
 Top-level handler that is responsible for processing CAS authentication.
 
