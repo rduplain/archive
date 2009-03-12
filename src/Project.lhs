@@ -2,6 +2,7 @@
 
 > import CAS
 > import Control.Monad.Trans            (liftIO)
+> import Data.Char                      (toUpper)
 > import Data.DateTime                  (diffMinutes, getCurrentTime, fromSqlString)
 > import Database.HDBC
 > import Database.HDBC.PostgreSQL       (connectPostgreSQL)
@@ -19,7 +20,7 @@
 Extract the project name from the request URI.
 
 > getProject =
->     getM (path % uri % request) >>= return . (fst . break (== '.') . tail)
+>     getM (path % uri % request) >>= return . (map toUpper . fst . break (== '.') . tail)
 
 Determine if the user is permitted access to the requested project.
 
