@@ -76,8 +76,10 @@
 >        else downloadHandler True session
 
 > downloadHtml = do
->     source  <- liftIO $ readFile "templates/project_name.html"
 >     project <- getProject
+>     source  <- if project == ""
+>         then liftIO $ readFile "templates/index.html"
+>         else liftIO $ readFile "templates/project_name.html"
 >     exists  <- liftIO $ doesDirectoryExist (root </> project)
 >     let tmpl = newSTMP source
 >     bs <- if exists

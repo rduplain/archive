@@ -57,16 +57,35 @@ div#nraoUtilities ul.menu {
     display: inline;
 }
 
-.coversheet-wrapper {
+.coversheet-wrapper, .query-wrapper {
     margin: 3em 0;
     width: 100%;
 }
 
-.coversheet {
-    width: 700px;
+.coversheet, .query {
     margin-left: auto;
     margin-right: auto;
     font-size: 14pt;
+}
+
+.coversheet {
+    width: 700px;
+}
+
+.query {
+    width: 200px;
+}
+
+.query-wrapper {
+    text-align: center;
+}
+
+.prompt  {
+    font-size: 14pt;
+}
+
+.hint {
+    font-size: 10pt;
 }
 
 .coversheet-title {
@@ -74,7 +93,7 @@ div#nraoUtilities ul.menu {
     font-size: large;
 }
 
-.coversheet-spacer {
+.coversheet-spacer, .query-spacer {
     margin: 10em;
 }
 

@@ -2,7 +2,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-  <title>$project$ - NRAO DataVault Download</title>
+  <title>What project would you like? - NRAO DataVault Download</title>
   <link href="/public/favicon.ico" rel="shortcut icon" type="image/x-icon" />
   <link rel="stylesheet" type="text/css" href="/public/main.css" />
   <link rel="stylesheet" type="text/css" href="/public/download.css" />
@@ -67,35 +67,34 @@
     </div>
   </div>
 
-  <div class="coversheet-wrapper">
-    <div class="coversheet">
-      <span class="coversheet-title">$project$</span>
-      <ul class="download-area">
-        $if(projects)$
-          $projects:{p | <li><a href="$p$.html">$p$</a></li>}$ 
-        $else$
-          <li>
-            <a class="download-link" href="$project$.tar.bz2">
-              <img src="/public/download.png" />
-              $project$.tar.bz2
-            </a>
-          </li>
-          <li>
-            <a class="download-link" href="$project$.tar.gz">
-              <img src="/public/download.png" />
-              $project$.tar.gz
-            </a>
-          </li>
-          <li>
-            <a class="download-link" href="$project$.zip">
-              <img src="/public/download.png" />
-              $project$.zip
-            </a>
-          </li>
-        $endif$
-      </ul>
+  <div class="query-wrapper">
+    <span class="prompt">What project would you like?</span><br /><br />
+    <span class="hint">(e.g. AGBT07A_051, or just AGBT07A)</span><br /><br />
+    <div class="query">
+      <script type="text/javascript">
+        function getProject() {
+            var value = document.DataVaultDownload.project_name.value;
+            console.log(value);
+            if(!value) {
+                console.log("reloading page");
+                window.open(".", "_blank");
+                console.log("can you see this?");
+                return;
+            }
+            console.log("redirecting to project page");
+            window.open("/download/" + value + ".html", "_blank");
+            console.log("can you see this?");
+            return;
+        }
+      </script>
+      <form name="DataVaultDownload" onsubmit="getProject()">
+        <input name="project_name" type="text" />
+      </form>
+      <a href="javascript:getProject()">
+          <img src="/public/btnGo.gif" alt="Go" width="35" height="20" border="0" />
+      </a>
     </div>
-    <div class="coversheet-spacer">&nbsp;</div>
+    <div class="query-spacer">&nbsp;</div>
   </div>
 
   <div id='footerUtilities'>  <a href="http://archive.nrao.edu/">NRAO Archive Home</a> | <a href="https://archive.nrao.edu/archive/archivetools.html">More Data Archive Tools</a> | <a href="http://go.nrao.edu/kmlnow">KML for Google Sky</a> | <a href="http://www.nrao.edu/administration/directors_office/dataarchive.shtml">Policy</a> | <a href="http://www.nrao.edu/archives/">History Archives</a> | <a href="http://www.nrao.edu/library/">Library</a> </div><div id='footer'><a href='http://www.nrao.edu'><img src='/public/logoNRAO.jpg' alt='NRAO' width='41' height='41' vspace='5' border='0' align='middle' style='float:left;' /></a><a href='http://www.nsf.gov/'><img src='/public/logoNSF.jpg' alt='NSF' width='57' height='51' hspace='10' border='0' align='middle'  style='float:left;' /></a><a href='http://www.aui.edu/'><img src='/public/logoAUI.gif' alt='AUI' width='74' height='49' vspace='1' border='0' align='middle' style='float:left; margin-right:20px;' /></a><p style='padding-top:10px;'>The National Radio Astronomy Observatory is a facility of the National Science Foundation operated under cooperative agreement by Associated Universities, Inc.</p></div>
