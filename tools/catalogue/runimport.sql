@@ -1,22 +1,17 @@
-CREATE TABLE IF NOT EXISTS lastdates
-(
-    project_name VARCHAR(18) NOT NULL UNIQUE
-  , lastdate     datetime    NOT NULL
-);
+-- CREATE LANGUAGE plpgsql;
 
-DELETE FROM lastdates;
+CREATE FUNCTION fix_lastdates() RETURNS void AS $$
+DECLARE
+	project varchar;
+BEGIN
+	FOR project IN SELECT DISTINCT(SUBSTRING(name FROM 1 FOR LENGTH(name)-3)) FROM projects LOOP
+		UPDATE projects
+		SET lastdate = (SELECT MAX(o.datetime)
+  			        FROM observations o, projects p
+			        WHERE o.project_id = p.id AND p.name LIKE project || E'\___')
+		WHERE name LIKE project || E'\___';
+	END LOOP;
+END
+$$ LANGUAGE plpgsql;
 
-INSERT INTO lastdates (
-    SELECT p.name, max(o.datetime)
-    FROM projects p, observations o
-    WHERE o.project_id IN (
-        SELECT q.id FROM projects q WHERE q.name LIKE CONCAT(SUBSTR(p.name, 1, LENGTH(p.name)-3), '\___'))
-    GROUP BY p.name);
-
-UPDATE projects
-SET lastdate = (
-    SELECT lastdate FROM lastdates WHERE project_name = name);
-
-DELETE FROM queries;
-
-INSERT INTO queries (SELECT * from observation_details);
+SELECT fix_lastdates();

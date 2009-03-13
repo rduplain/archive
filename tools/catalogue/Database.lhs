@@ -31,6 +31,7 @@
 > saveObservation cnn obs = do
 >     [[observation_id]] <- saveObservation' cnn obs
 >     mapM_ (saveWindow cnn observation_id) $ windows obs
+>     commit cnn
 
 > saveObservation' cnn obs = do
 >     [[project_id]] <- saveProject cnn (proj obs) (observer obs) (telescope obs)
