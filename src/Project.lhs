@@ -31,11 +31,12 @@ Determine if the user is permitted access to the requested project.
 >     cnn <- connect
 >     rst <- quickQuery' cnn "SELECT lastdate FROM projects WHERE name = ?" [toSql project]
 >     case rst of
->         [[date]] -> do
+>         [[SqlNull]] -> return False
+>         [[date]]    -> do
 >             let Just date' = fromSqlString . fromSql $ date
 >             today <- getCurrentTime
 >             return $ today `diffMinutes` date' >= 365*24*60
->         _ -> return False
+>         _           -> return False
 
 Conditionally---checking access policy---run a download handler or
 return an access denied error.
