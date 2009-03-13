@@ -7,8 +7,10 @@
 # No arguments means look for all projects.
 
 execdir=`dirname $0`
+whichdir=`which $0`
+whichdir=`dirname $whichdir`
 sqlbase="runimport.sql"
-sql_default="$execdir/../lib/catalogue/$sqlbase"
+sql_default="$execdir/$sqlbase"
 
 catalogue="Catalogue"
 scanlog_base="ScanLog.fits"
@@ -23,6 +25,10 @@ fi
 sqlpath="./$sqlbase"
 if [ ! -e $sqlpath ]; then
     sqlpath=$execdir/../lib/catalogue/$sqlbase
+fi  
+
+if [ ! -e $sqlpath ]; then
+    sqlpath=$whichdir/$sqlbase
 fi  
 
 echo "using $sqlbase at $sqlpath"
@@ -45,5 +51,12 @@ for target in $targets; do
     done
 done
 
-echo "running mysql with $sqlpath"
-mysql -u powerdave -p'Green$Bank' -D vault < $sqlpath
+# sqlcmd="mysql -u powerdave -p'Green$Bank' -D vault"
+sqlcmd="psql -U dave vault"
+if [ -e $sqlpath ]; then
+    echo "$sqlcmd < $sqlpath"
+    $sqlcmd < $sqlpath
+else
+    echo "manually run:"
+    echo "$sqlcmd < $sqlbase"
+fi
