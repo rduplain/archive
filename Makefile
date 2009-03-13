@@ -8,3 +8,7 @@ download: src/Main.lhs src/Browse.lhs src/Project.lhs src/CAS.lhs
 
 clean:
 	rm -f ./download ./src/*.o ./src/*.hi
+
+shell:
+	bash --rcfile ./tools/permissions/vault_functions.sh; echo -n
+
