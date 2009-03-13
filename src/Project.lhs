@@ -19,8 +19,11 @@
 
 Extract the project name from the request URI.
 
-> getProject =
->     getM (path % uri % request) >>= return . (map toUpper . fst . break (== '.') . tail)
+> getProject = do
+>     path' <- getM (path % uri % request)
+>     case path' of
+>       "" -> return ""
+>       _  -> return . map toUpper . fst . break (== '.') . tail $ path'
 
 Determine if the user is permitted access to the requested project.
 
@@ -43,4 +46,9 @@ return an access denied error.
 >     allowed <- liftIO $ isAllowed project
 >     if allowed
 >        then handler project session
->        else protect (\_ session -> handler project session) session
+>        else flip protect session $ \username session -> do
+>            cnn <- liftIO $ connect
+>            rst <- liftIO $ quickQuery' cnn "SELECT user_name FROM permissions WHERE project_name = ? AND user_name = ?" [toSql project, toSql username]
+>            case rst of
+>                [] -> hError Unauthorized
+>                _  -> handler project session
