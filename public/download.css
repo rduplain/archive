@@ -73,11 +73,16 @@ div#nraoUtilities ul.menu {
 }
 
 .query {
-    width: 200px;
+    width: 400px;
 }
 
-.query-wrapper {
+.query-wrapper, .policy-link {
     text-align: center;
+}
+
+.policy-link {
+    font-size: 16px;
+    margin: 1.5em;
 }
 
 .prompt  {
@@ -95,6 +100,10 @@ div#nraoUtilities ul.menu {
 
 .coversheet-spacer, .query-spacer {
     margin: 10em;
+}
+
+.section-spacer {
+    margin: 5em;
 }
 
 .download-area {
@@ -115,4 +124,15 @@ div#nraoUtilities ul.menu {
 
 .hidden {
     visibility: hidden;
+}
+
+.instructions {
+    font-size: 16px;
+    line-height: 1.3em;
+    text-align: left;
+}
+
+.instructions ul {
+    margin-left: 5em;
+    margin-right: 5em;
 }

@@ -71,30 +71,33 @@
     <span class="prompt">What project would you like?</span><br /><br />
     <span class="hint">(e.g. AGBT07A_051, or just AGBT07A)</span><br /><br />
     <div class="query">
-      <script type="text/javascript">
-        function getProject() {
-            var value = document.DataVaultDownload.project_name.value;
-            console.log(value);
-            if(!value) {
-                console.log("reloading page");
-                window.open(".", "_blank");
-                console.log("can you see this?");
-                return;
-            }
-            console.log("redirecting to project page");
-            window.open("/download/" + value + ".html", "_blank");
-            console.log("can you see this?");
-            return;
-        }
-      </script>
       <form name="DataVaultDownload" onsubmit="getProject()">
         <input name="project_name" type="text" />
+        <a href="javascript:document.DataVaultDownload.submit()">
+          <img src="/public/btnGo.gif" alt="Go" width="35" height="20"
+            border="0" style="left: 1px; top: 5px; position: relative" />
+        </a>
       </form>
-      <a href="javascript:getProject()">
-          <img src="/public/btnGo.gif" alt="Go" width="35" height="20" border="0" />
-      </a>
     </div>
+    <div class="section-spacer">&nbsp;</div>
+    <div class="instructions">
+    <ul>Use the search box above, or access projects directly by URL.
+      <li>See a full project with an exact project ID:
+      e.g. <a href="/download/AGBT07A_051_01.html">/download/AGBT07A_051_01.html</a>
+      </li>
+      <li>See all projects with a partial match of the project ID:
+      e.g. <a href="/download/AGBT07A.html">/download/AGBT07A.html</a>
+      </li>
+      <li>The format is:
+      /download/project_name.html
+      </li>
+      <li>(Currently, only GBT data is available during the initial pilot of this service.)</li>
+    </ul>
     <div class="query-spacer">&nbsp;</div>
+  </div>
+
+  <div class="policy-link">
+  <a href="http://www.nrao.edu/admin/do/dataarchive.shtml">Data Archive Policy</a>
   </div>
 
   <div id='footerUtilities'>  <a href="http://archive.nrao.edu/">NRAO Archive Home</a> | <a href="https://archive.nrao.edu/archive/archivetools.html">More Data Archive Tools</a> | <a href="http://go.nrao.edu/kmlnow">KML for Google Sky</a> | <a href="http://www.nrao.edu/administration/directors_office/dataarchive.shtml">Policy</a> | <a href="http://www.nrao.edu/archives/">History Archives</a> | <a href="http://www.nrao.edu/library/">Library</a> </div><div id='footer'><a href='http://www.nrao.edu'><img src='/public/logoNRAO.jpg' alt='NRAO' width='41' height='41' vspace='5' border='0' align='middle' style='float:left;' /></a><a href='http://www.nsf.gov/'><img src='/public/logoNSF.jpg' alt='NSF' width='57' height='51' hspace='10' border='0' align='middle'  style='float:left;' /></a><a href='http://www.aui.edu/'><img src='/public/logoAUI.gif' alt='AUI' width='74' height='49' vspace='1' border='0' align='middle' style='float:left; margin-right:20px;' /></a><p style='padding-top:10px;'>The National Radio Astronomy Observatory is a facility of the National Science Foundation operated under cooperative agreement by Associated Universities, Inc.</p></div>
