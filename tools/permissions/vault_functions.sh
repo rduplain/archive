@@ -1,14 +1,19 @@
 # Start a new bash shell with this as the rc file.
 # bash --rcfile <this-file>
 
-dbbin=/usr/local/pgsql/bin/psql
+dbbin=/usr/local/pgsql/bin/psql # default if no psql in PATH
 dbuser=dave
 dbname=vault
-dbcall="$dbbin -U $dbuser $dbname"
 
 old="date '1970-01-01'"
 
 explanations=( )
+
+dbwhich=`which psql`
+
+[[ -x $dbwhich ]] && dbbin=$dbwhich
+
+dbcall="$dbbin -U $dbuser $dbname"
 
 function explain () {
     # Optionally define this function contingent on a verbose flag.
