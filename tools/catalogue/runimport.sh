@@ -11,7 +11,7 @@ whichdir=`which $0`; whichdir=`dirname $whichdir`
 sqlbase="runimport.sql"
 sql_default="$execdir/$sqlbase"
 
-catalogue="Catalogue"
+catalogue_base="Catalogue"
 scanlog_base="ScanLog.fits"
 
 # Grab target from the command line.
@@ -35,7 +35,17 @@ if [ ! -e $sqlpath ]; then
     sqlpath=$whichdir/$sqlbase
 fi  
 
-echo "using $sqlbase at $sqlpath"
+
+catalogue=$execdir/$catalogue_base
+if [ ! -x $catalogue ]; then
+    catalogue=$whichdir/$catalogue_base
+fi  
+
+if [ ! -x $catalogue ]; then
+    catalogue=`which $catalogue_base`
+fi  
+
+echo "using $sqlbase at $sqlpath to run after $catalogue"
 
 for target in $targets; do
     for scanlog_found in `find $target -name $scanlog_base`; do 
