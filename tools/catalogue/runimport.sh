@@ -65,12 +65,16 @@ for target in $targets; do
     done
 done
 
-# sqlcmd="mysql -u powerdave -p'Green$Bank' -D vault"
-sqlcmd="psql -U dave vault"
+psql=`which psql`
+if [ -z "$psql" ]; then
+    psql=/usr/local/pgsql/bin/psql
+fi
+
+dbcmd="$psql -U dave vault"
 if [ -e $sqlpath ]; then
-    echo "$sqlcmd < $sqlpath"
-    $sqlcmd < $sqlpath
+    echo "$dbcmd < $sqlpath"
+    $dbcmd < $sqlpath
 else
     echo "manually run:"
-    echo "$sqlcmd < $sqlbase"
+    echo "$dbcmd < $sqlbase"
 fi
