@@ -4,6 +4,7 @@
 dbbin=/usr/local/pgsql/bin/psql # default if no psql in PATH
 dbuser=dave
 dbname=vault
+dbimport=/srv/download/tools/catalogue/runimport.sh
 
 old="date '1970-01-01'"
 
@@ -170,14 +171,19 @@ function vault_age () {
         return 1
     fi
 }
-explain "vault age <project> - display lastdate and age of <project>"
+explain "vault age <project> - display lastdate and age of <project>."
 
 function vault_help () {
     for ((i=0; i<${#explanations[@]}; i++)); do
         echo ${explanations[i]}
     done
 }
-explain "vault help - show these help messages"
+explain "vault help - show these help messages."
+
+function vault_import () {
+    $dbimport $@
+}
+explain "vault import [<project-glob>] - import GBT project(s) using catalogue."
 
 function vault () {
     local vault_command=$1;

@@ -7,8 +7,7 @@
 # No arguments means look for all projects.
 
 execdir=`dirname $0`
-whichdir=`which $0`
-whichdir=`dirname $whichdir`
+whichdir=`which $0`; whichdir=`dirname $whichdir`
 sqlbase="runimport.sql"
 sql_default="$execdir/$sqlbase"
 
@@ -19,10 +18,15 @@ scanlog_base="ScanLog.fits"
 targets="$@"
 
 if [ -z "$targets" ]; then
+    echo "assuming you everything in current directory..."
     targets=`ls -A`
 fi
 
 sqlpath="./$sqlbase"
+if [ ! -e $sqlpath ]; then
+    sqlpath=$execdir/$sqlbase
+fi  
+
 if [ ! -e $sqlpath ]; then
     sqlpath=$execdir/../lib/catalogue/$sqlbase
 fi  
