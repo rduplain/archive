@@ -161,6 +161,10 @@ function vault_age () {
     local project_name=$1
     shift;
 
+    [[ -z "$project_name" ]] && return 1
+
+    echo "looking for most recent session in project containing $project_name"
+
     local f=lastdate
     local lastdate=`db "select $f from projects where name = '$project_name';"`
     lastdate=${lastdate// /}
