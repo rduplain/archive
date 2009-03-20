@@ -1,0 +1,92 @@
+Index: src/http/ngx_http_request.h
+===================================================================
+--- src/http/ngx_http_request.h	(revision 1318)
++++ src/http/ngx_http_request.h	(working copy)
+@@ -455,6 +455,7 @@
+ 
+     unsigned                          pipeline:1;
+     unsigned                          plain_http:1;
++    unsigned                          no_chunked:1;
+     unsigned                          chunked:1;
+     unsigned                          header_only:1;
+     unsigned                          zero_body:1;
+Index: src/http/ngx_http_upstream.c
+===================================================================
+--- src/http/ngx_http_upstream.c	(revision 1318)
++++ src/http/ngx_http_upstream.c	(working copy)
+@@ -69,6 +69,8 @@
+     ngx_table_elt_t *h, ngx_uint_t offset);
+ static ngx_int_t ngx_http_upstream_rewrite_refresh(ngx_http_request_t *r,
+     ngx_table_elt_t *h, ngx_uint_t offset);
++static ngx_int_t ngx_http_upstream_copy_transfer_encoding(ngx_http_request_t *r,
++    ngx_table_elt_t *h, ngx_uint_t offset);
+ #if (NGX_HTTP_GZIP)
+ static ngx_int_t ngx_http_upstream_copy_content_encoding(ngx_http_request_t *r,
+     ngx_table_elt_t *h, ngx_uint_t offset);
+@@ -178,6 +180,11 @@
+                  ngx_http_upstream_ignore_header_line, 0,
+                  ngx_http_upstream_ignore_header_line, 0, 0 },
+ 
++    { ngx_string("Transfer-Encoding"),
++                 ngx_http_upstream_process_header_line,
++                 offsetof(ngx_http_upstream_headers_in_t, transfer_encoding),
++                 ngx_http_upstream_copy_transfer_encoding, 0, 0 },
++
+     { ngx_string("X-Powered-By"),
+                  ngx_http_upstream_ignore_header_line, 0,
+                  ngx_http_upstream_copy_header_line, 0, 0 },
+@@ -2745,6 +2752,28 @@
+ }
+ 
+ 
++static ngx_int_t
++ngx_http_upstream_copy_transfer_encoding(ngx_http_request_t *r,
++    ngx_table_elt_t *h, ngx_uint_t offset)
++{
++    ngx_table_elt_t  *ho;
++
++    ho = ngx_list_push(&r->headers_out.headers);
++    if (ho == NULL) {
++        return NGX_ERROR;
++    }
++
++    *ho = *h;
++
++    if (ngx_strcasestrn(h->value.data, "chunked", 7 - 1)) {
++        r->no_chunked = 1;
++    }
++
++    return NGX_OK;
++}
++
++
++
+ #if (NGX_HTTP_GZIP)
+ 
+ static ngx_int_t
+Index: src/http/ngx_http_upstream.h
+===================================================================
+--- src/http/ngx_http_upstream.h	(revision 1318)
++++ src/http/ngx_http_upstream.h	(working copy)
+@@ -187,6 +187,7 @@
+     ngx_table_elt_t                *location;
+     ngx_table_elt_t                *accept_ranges;
+     ngx_table_elt_t                *www_authenticate;
++    ngx_table_elt_t                *transfer_encoding;
+ 
+ #if (NGX_HTTP_GZIP)
+     ngx_table_elt_t                *content_encoding;
+Index: src/http/modules/ngx_http_chunked_filter_module.c
+===================================================================
+--- src/http/modules/ngx_http_chunked_filter_module.c	(revision 1318)
++++ src/http/modules/ngx_http_chunked_filter_module.c	(working copy)
+@@ -59,7 +59,7 @@
+     }
+ 
+     if (r->headers_out.content_length_n == -1) {
+-        if (r->http_version < NGX_HTTP_VERSION_11) {
++        if (r->http_version < NGX_HTTP_VERSION_11 || r->no_chunked) {
+             r->keepalive = 0;
+ 
+         } else {
+
