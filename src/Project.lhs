@@ -13,7 +13,7 @@
 > import Network.Salvia.Handlers.Session
 > import Network.Salvia.Httpd
 
-> root = "/data/gbt/raw"
+> root = "/data/gbt/raw/fits"
 
 > connect = connectPostgreSQL "dbname=vault user=dave"
 
