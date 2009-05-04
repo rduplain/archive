@@ -2,7 +2,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-  <title>$project$ - NRAO DataVault Download</title>
+  <title>Basics - NRAO DataVault Download</title>
   <link href="/public/favicon.ico" rel="shortcut icon" type="image/x-icon" />
   <link rel="stylesheet" type="text/css" href="/public/main.css" />
   <link rel="stylesheet" type="text/css" href="/public/download.css" />
@@ -45,7 +45,7 @@
   </div>
 
   <div id="nraoTopMenu">
-    <ul class="menu"><li id="current" class="active item1"><a href="/download/"><span>Download</span></a</li></ul>
+    <ul class="menu"><li id="current" class="active item1"><a href=""><span>Download Basics</span></a</li></ul>
   </div>
 
   <!--
@@ -67,46 +67,45 @@
     </div>
   </div>
 
-  <div class="coversheet-wrapper">
-    <div class="coversheet">
-      <span class="coversheet-title">$project$</span>
-      <br />
-      <br />
-      <br />
-      <h4>Download</h4>
-      <ul class="download-area">
-        $if(projects)$
-          $projects:{p | <li><a href="$p$.html">$p$</a></li>}$ 
-        $else$
-          <li>
-            <a class="download-link" href="$project$.tar.bz2">
-              <img src="/public/download.png" />
-              $project$.tar.bz2
-            </a>
-            (<a href="/public/basics.html#file_types">?</a>)
-          </li>
-          <li>
-            <a class="download-link" href="$project$.tar.gz">
-              <img src="/public/download.png" />
-              $project$.tar.gz
-            </a>
-            (<a href="/public/basics.html#file_types">?</a>)
-          </li>
-          <li>
-            <a class="download-link" href="$project$.zip">
-              <img src="/public/download.png" />
-              $project$.zip
-            </a>
-            (<a href="/public/basics.html#file_types">?</a>)
-          </li>
-        $endif$
-      </ul>
-    </div>
-    <div class="coversheet-spacer">&nbsp;</div>
-  </div>
-
-  <div class="policy-link">
-  <a href="/public/basics.html">Help</a>
+  <div class="query-wrapper">
+    <div class="instructions">
+    <a name="overview" />
+    <ul><strong>Overview:</strong>
+      <li>This tool, called "DataVault Lite," provides direct download links for NRAO telescope data.</li>
+      <li>Provide a project ID to find a download cover page for the given project.</li>
+      <li>Development of this tool began in Jan 2009, and is on-going.</li>
+      <li>Proprietary data requires authentication, and in some cases, special request to the developers to provide access.</li>
+    </ul>
+    <div class="spacer">&nbsp;</div>
+    <a name="instructions" />
+    <ul><strong>Instructions:</strong>
+      <li>See the homepage at <a href="/download/">/download</a>.
+      <li>Access projects directly by URL with your browser address bar.</li>
+      <li>See a full project with an exact project ID:<br />
+      e.g. <a href="/download/AGBT06B_023_07.html">/download/AGBT06B_023_07.html</a>
+      </li>
+      <li>See all projects with a partial match of the project ID:<br />
+      e.g. <a href="/download/AGBT06B_023.html">/download/AGBT06B_023.html</a>, <a href="/download/AGBT06B.html">/download/AGBT06B.html</a>
+      </li>
+      <li>The format is:
+      /download/project_name.html
+      </li>
+    </ul>
+    <div class="spacer">&nbsp;</div>
+    <a name="file_types" />
+    <ul><strong>File types:</strong>
+      <li>.tar.bz2 - bzip2 compressed <a href="http://en.wikipedia.org/wiki/Tar_(file_format)">tarball.</a>  On GNU/Linux, unpack with <br /> <code>tar -xvjf filename.tar.bz2</code></li>
+      <li>.tar.gz - gzip compressed <a href="http://en.wikipedia.org/wiki/Tar_(file_format)">tarball.</a>  On GNU/Linux, unpack with <br /> <code>tar -xvzf filename.tar.gz</code></li>
+      <li>.zip - <a href="http://en.wikipedia.org/wiki/ZIP_(file_format)">ZIP file</a>, recommended for Windows users.</li>
+      <li>.sdfits - GBT single-dish FITS file, <a href="https://safe.nrao.edu/wiki/bin/view/GB/Data/Sdfits">sdfits</a></li>
+    </ul>
+    <div class="spacer">&nbsp;</div>
+    <a name="redirection" />
+    <ul><strong>Redirection:</strong>
+      <li>In some cases, archived data cannot be provided directly through this tool, and you will be given a link to an external site which provides the requested data.</li>
+      <li>The goal of development is to provide a common look and feel for accessing all types of data.  This is an on-going process.</li>
+    </ul>
+    <div class="query-spacer">&nbsp;</div>
   </div>
 
   <div class="policy-link">

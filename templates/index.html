@@ -69,7 +69,7 @@
 
   <div class="query-wrapper">
     <span class="prompt">What project would you like?</span><br /><br />
-    <span class="hint">(e.g. AGBT07A_051, or just AGBT07A)</span><br /><br />
+    <span class="hint">(e.g. AGBT06B_023, or just AGBT06B)</span><br /><br />
     <div class="query">
       <form name="DataVaultDownload" onsubmit="getProject()">
         <input name="project_name" type="text" />
@@ -78,23 +78,35 @@
             border="0" style="left: 1px; top: 5px; position: relative" />
         </a>
       </form>
+    <span class="hint"><a href="/public/basics.html">need help?</a></span>
     </div>
     <div class="section-spacer">&nbsp;</div>
     <div class="instructions">
-    <ul>Use the form above, or access projects directly by URL with your
-    browser address bar.
-      <li>See a full project with an exact project ID:
-      e.g. <a href="/download/AGBT07A_051_01.html">/download/AGBT07A_051_01.html</a>
+    <ul>Instructions:
+      <li>Use the form above, or <br /> access projects directly by URL with your browser address bar.</li>
+      <li>See a full project with an exact project ID:<br />
+      e.g. <a href="/download/AGBT06B_023_07.html">/download/AGBT06B_023_07.html</a>
       </li>
-      <li>See all projects with a partial match of the project ID:
-      e.g. <a href="/download/AGBT07A.html">/download/AGBT07A.html</a>
+      <li>See all projects with a partial match of the project ID:<br />
+      e.g. <a href="/download/AGBT06B_023.html">/download/AGBT06B_023.html</a>, <a href="/download/AGBT06B.html">/download/AGBT06B.html</a>
       </li>
       <li>The format is:
       /download/project_name.html
       </li>
-      <li>(Currently, only GBT data is available during the initial pilot of this service.)</li>
     </ul>
+    <div class="spacer">&nbsp;</div>
+    <div class="status">
+    <ul>Status:
+      <li><strong>pilot, testing</strong></li>
+      <li>all archived GBT projects are available</li>
+      <li>currently adding VLA and VLBA projects to the index</li>
+    </ul>
+    </div>
     <div class="query-spacer">&nbsp;</div>
+  </div>
+
+  <div class="policy-link">
+  <a href="/public/basics.html">Help</a>
   </div>
 
   <div class="policy-link">
