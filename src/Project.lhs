@@ -1,4 +1,4 @@
-> module Project (getProject, isAllowed, root, withProject) where
+> module Project (getProject, isAllowed, root, aocroot, withProject) where
 
 > import CAS
 > import Control.Monad.Trans            (liftIO)
@@ -14,6 +14,7 @@
 > import Network.Salvia.Httpd
 
 > root = "/data/gbt/raw/fits"
+> aocroot = "/data/aoc/list"
 
 > connect = connectPostgreSQL "dbname=vault user=dave"
 

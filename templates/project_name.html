@@ -73,11 +73,24 @@
       <br />
       <br />
       <br />
+      $if(telescope)$
+      <h4>Telescope</h4>
+      <br />
+      $telescope$
+      <br />
+      <br />
+      <br />
+      $endif$
+      $if(!empty)$
+      <h4>Projects</h4>
+      $else$
       <h4>Download</h4>
+      $endif$
       <ul class="download-area">
-        $if(projects)$
-          $projects:{p | <li><a href="$p$.html">$p$</a></li>}$ 
+        $if(!empty)$
+          $projects:{p | <li><a href="$p$.html">$p$</a></li>}$
         $else$
+          $if(gbt)$
           <li>
             <a class="download-link" href="$project$.tar.bz2">
               <img src="/public/download.png" />
@@ -99,6 +112,15 @@
             </a>
             (<a href="/public/basics.html#file_types">?</a>)
           </li>
+          $else$
+          <li>
+            <a class="download-link" href="https://archive.nrao.edu/archive/ArchiveQuery?QUERY_ID=9999&QUERY_MODE=Prepare+Download&PROTOCOL=HTML&SORT_PARM=Starttime&SORT_ORDER=Asc&LOCKMODE=PROJECT&SITE_CODE=AOC&DBHOST=CHEWBACCA&PROJECT_CODE=$project$&OBSERVER=&TELESCOPE=ALL&TIMERANGE1=&TIMERANGE2=&PASSWD=&QUERYTYPE=ARCHIVE&SUBMIT=Submit+Query">
+              <img src="/public/download.png" />
+              $project$
+            </a>
+            (<a href="/public/basics.html#redirection">?</a>)
+          </li>
+          $endif$
         $endif$
       </ul>
     </div>

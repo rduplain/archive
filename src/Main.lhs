@@ -75,18 +75,26 @@
 >        then hFileResource $ "staged" ++ path'
 >        else downloadHandler True session
 
+HStringTemplate doesn't seem to support elseif, or comparisons in if statements.
+For now, just use some redundant flags as a workaround.
+Also, we need to just get VLA/VLBA/EVLA projects into index asap.  Hack.
+
 > downloadHtml = do
 >     project <- getProject
 >     source  <- if project == ""
 >         then liftIO $ readFile "templates/index.html"
 >         else liftIO $ readFile "templates/project_name.html"
 >     exists  <- liftIO $ doesDirectoryExist (root </> project)
+>     aocexists  <- liftIO $ doesDirectoryExist (aocroot </> project)
 >     let tmpl = newSTMP source
 >     bs <- if exists
->         then return . render . setAttribute "project" project $ tmpl
+>         then return . render . setAttribute "project" project . setAttribute "telescope" "GBT" . setAttribute "gbt" True . setAttribute "empty" True $ tmpl
+>         else if aocexists
+>         then return . render . setAttribute "project" project . setAttribute "gbt" False . setAttribute "empty" True $ tmpl
 >         else liftIO $ do
 >             projects <- fmap (filter (project `isPrefixOf`)) . getDirectoryContents $ root
->             return . render . setAttribute "projects" (sort . map takeBaseName $ projects) . setAttribute "project" project $ tmpl
+>             aocprojects <- fmap (filter (project `isPrefixOf`)) . getDirectoryContents $ aocroot
+>             return . render . setAttribute "projects" (sort . map takeBaseName $ (projects ++ aocprojects)) . setAttribute "project" project . setAttribute "empty" (length projects == 0) $ tmpl
 >     enterM response $ do
 >         setM contentType ("text/html", Just "utf-8")
 >         setM contentLength (Just . fromIntegral . L.length $ bs)
