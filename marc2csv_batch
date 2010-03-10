@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for f in "$@"; do
+    out=${f##*/} # same as basename
+    python marc2csv.py "$f" > $out.csv
+done
