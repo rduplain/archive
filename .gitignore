@@ -1,0 +1,11 @@
+*~
+.*~
+~*
+\#*
+.#*
+build/
+bin/
+*.py[co]
+*.org
+*.orig
+*.rej
