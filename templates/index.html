@@ -21,11 +21,12 @@
           save: {
             method: "ajax",
             options: {
-              success: function() {
-                alert("saved!");
+              success: function(data) {
+                console.log(data);
               }
             }
-          }
+          },
+          scope: "all",
         }
       });
     });
