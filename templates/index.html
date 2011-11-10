@@ -12,8 +12,8 @@
       $("form").autosave({
         callbacks: {
           trigger: ["change", function() {
+            // A trigger for the save button.
             var self = this;
-
             $("[name=save]").click(function() {
               self.save();
             });
@@ -26,8 +26,7 @@
                 console.log(data);
               }
             }
-          },
-          scope: "all",
+          }
         }
       });
     });
