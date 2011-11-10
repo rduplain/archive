@@ -1,0 +1,8 @@
+/build/
+/dist/
+.DS_Store
+*.egg
+*.egg-info
+/files/
+*.py[co]
+.tox
