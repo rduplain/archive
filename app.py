@@ -10,6 +10,7 @@ UPLOAD_FOLDER = 'files'
 
 
 def init_app(app):
+    "Initialize app object. Create upload folder if it does not exist."
     if not os.path.isabs(app.config['UPLOAD_FOLDER']):
         folder = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'])
         app.config['UPLOAD_FOLDER'] = folder
@@ -23,12 +24,14 @@ init_app(app)
 
 
 def save_file(filestorage, app=app):
+    "Save a Werkzeug file storage object to the upload folder."
     filename = secure_filename(filestorage.filename)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     filestorage.save(filepath)
 
 
 def save_files(request=request, app=app):
+    "Save all files in a request to the app's upload folder."
     for _, filestorage in request.files.iteritems():
         # Workaround: larger uploads cause a dummy file named '<fdopen>'.
         # See the Flask mailing list for more information.
