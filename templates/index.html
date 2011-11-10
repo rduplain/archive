@@ -41,14 +41,24 @@
             method: "ajax",
             options: {
               success: function(data) {
-                // Callback for successfully saved data.
-                // This data is returned by jsonify in Flask app.
-                console.log(data);
+                if (!data) {
+                  // Error occurred: server returns data, but there's no data.
+                  // For some reason, success callback fires instead of an
+                  // error callback in this options object. Plugin bug?
+                  console.log("Unable to save.");
+                } else {
+                  // Callback for successfully saved data.
+                  // This data is returned by jsonify in Flask app.
+                  console.log(data);
 
-                // Now that data is saved, remove editing class.
-                // editing class should stay if user typed since save,
-                // but as this code stands now, remove it always.
-                $("textarea.editing").removeClass("editing");
+                  // Now that data is saved, remove editing class.
+                  // editing class should stay if user typed since save,
+                  // but as this code stands now, remove it always.
+                  $("textarea.editing").removeClass("editing");
+                }
+              },
+              error: function() {
+                console.log("Unable to save. (error callback)");
               }
             }
           }
