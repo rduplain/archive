@@ -11,6 +11,12 @@
     jQuery(function($) {
       $("form").autosave({
         callbacks: {
+          // Add three triggers:
+          // 1. change - when an input is changed on blur
+          // 2. save button press - when button name=save is clicked
+          // 3. interval - on a regular timer
+          //
+          // All three are applied to the same scope of inputs, defined below.
           trigger: ["change", function() {
             // A trigger for the save button.
             var self = this;
@@ -20,7 +26,7 @@
           }, {
             method: "interval",
             options: {
-              interval: 5000
+              interval: 5000 // in milliseconds.
             }
           }],
           scope: {
@@ -35,6 +41,7 @@
             method: "ajax",
             options: {
               success: function(data) {
+                // Callback for successfully saved data.
                 // This data is returned by jsonify in Flask app.
                 console.log(data);
 
