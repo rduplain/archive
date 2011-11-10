@@ -17,17 +17,45 @@
             $("[name=save]").click(function() {
               self.save();
             });
+          }, {
+            method: "interval",
+            options: {
+              interval: 5000
+            }
           }],
+          scope: {
+            method: function() {
+              // Builtin scope "changed" does not catch textareas being edited,
+              // so add textareas marked as undergoing an edit.
+              // See textarea typing callback below.
+              return this.changedInputs().add("textarea.editing");
+            }
+          },
           save: {
             method: "ajax",
             options: {
               success: function(data) {
                 // This data is returned by jsonify in Flask app.
                 console.log(data);
+
+                // Now that data is saved, remove editing class.
+                // editing class should stay if user typed since save,
+                // but as this code stands now, remove it always.
+                $("textarea.editing").removeClass("editing");
               }
             }
           }
         }
+      });
+
+      $("textarea").keyup(function () {
+         // Prevent redundant saving of textareas by detecting typing.
+         // If textarea text length changes, mark textarea as undergoing edit.
+         // Minor limitation: does not catch single highlighted char changes.
+         if ($(this).attr("count") != $(this).val().length) {
+           $(this).addClass("editing");
+         }
+         $(this).attr("count", $(this).val().length);
       });
     });
   </script>
