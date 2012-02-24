@@ -8,10 +8,13 @@ This project contains minimalist emulator skins for the Android SDK, including
 skins which start in landscape mode for keymaps which do not readily support
 the Android Emulator keybindings.
 
-Your emulator can look like this, with only window decorations your window
-manager adds:
+Your emulator can look like this, without any emulator onion graphics and only
+window decorations which your window manager adds:
 
 ![Minimal Landscape Emulator](https://raw.github.com/rduplain/android-minimal-skins/master/minimal-land.png)
+
+That is, you get a window which is the viewport of the Android device and
+nothing else.
 
 
 Installation
