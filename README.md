@@ -11,7 +11,7 @@ the Android Emulator keybindings.
 Your emulator can look like this, with only window decorations your window
 manager adds:
 
-![Minimal Landscape Emulator](minimal-land.png)
+![Minimal Landscape Emulator](https://raw.github.com/rduplain/android-minimal-skins/master/minimal-land.png)
 
 
 Installation
@@ -36,7 +36,7 @@ of this repository, you can link to these skin directories:
 
 Once installed, you can select the skin in the AVD manager.
 
-![AVD Manager](avd-manager.png)
+![AVD Manager](https://raw.github.com/rduplain/android-minimal-skins/master/avd-manager.png)
 
 
 Alternatives
