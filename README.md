@@ -1,5 +1,12 @@
 ## ExpressionFile: given SQL Expression Language, provide file-like CSV object.
 
+<iframe src="http://slid.es/rduplain/lazy-pandas/embed"
+  width="576" height="420" scrolling="no" frameborder="0"
+  webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+http://slid.es/rduplain/lazy-pandas
+
+
 ### Motivation
 
 1. Preprocess some dataset into one or more tables.
