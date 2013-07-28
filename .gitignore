@@ -1,0 +1,17 @@
+.#*
+*~
+\#*
+*.csv
+data/
+*.db
+.DS_Store
+/.emacs*
+*.lock
+*.log
+__MACOSX
+*.out
+*.pyc
+*.sqlite
+*.sw*
+*.txt
+Untitled*.ipynb
