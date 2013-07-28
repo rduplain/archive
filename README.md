@@ -1,10 +1,6 @@
 ## ExpressionFile: given SQL Expression Language, provide file-like CSV object.
 
-<iframe src="http://slid.es/rduplain/lazy-pandas/embed"
-  width="576" height="420" scrolling="no" frameborder="0"
-  webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-
-http://slid.es/rduplain/lazy-pandas
+Slides: <http://slid.es/rduplain/lazy-pandas>
 
 
 ### Motivation
@@ -24,9 +20,10 @@ This means that all middleware must be lazy.
 
 ### Obstacle
 
- * #2305 - Creating DataFrame from generator/iterator
+ * [#2305](https://github.com/pydata/pandas/issues/2305) -
+   Creating DataFrame from generator/iterator
    yielding records with minimal memory use
- * https://github.com/pydata/pandas/issues/2305
+ * <https://github.com/pydata/pandas/issues/2305>
 
 I have tried:
 
