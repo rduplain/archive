@@ -8,7 +8,7 @@ from .app import Application, Injector
 from .build import Builder, Crew
 from .plan import Plan, InjectorPlan
 
-__version__ = '0.1'
+__version__ = '0.2-dev'
 __all__ = [
     'Application',
     'Builder',
