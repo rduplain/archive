@@ -13,3 +13,4 @@ install: python
 clean:
 	rm -fr README.html *.egg-info
 	rm -fr env .ts-install
+	rm -fr dist
