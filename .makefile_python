@@ -1,0 +1,35 @@
+export PROJECT_ROOT = $(abspath $(lastword $(MAKEFILE_LIST))/..)
+export PROJECT_NAME = $(notdir $(PROJECT_ROOT))
+export VIRTUALENV = pyvenv-$(PYTHON_VERSION)
+export ENVDIR = $(PROJECT_ROOT)/env
+export REQUIREMENTS = $(PROJECT_ROOT)/requirements.txt
+export PYTHON = $(ENVDIR)/bin/python
+export PIP = $(ENVDIR)/bin/pip
+export PYFLAKES = $(ENVDIR)/bin/pyflakes
+export PTH_PATH = $(ENVDIR)/lib/python$(PYTHON_VERSION)/site-packages/$(PROJECT_NAME).pth
+
+%-command:
+	@which $* >/dev/null || ( echo "Requires '$*' command."; false )
+
+python: $(VIRTUALENV)-command .ts-install .makefile_python
+
+# Depend on setup.py but only if it exists, and call setup.py develop.
+.ts-install: $(PYTHON) $(REQUIREMENTS) $(wildcard setup.py)
+	@echo "Installing packages listed in $(REQUIREMENTS) ..."
+	$(PIP) install -r $(REQUIREMENTS)
+	$(PIP) install pyflakes
+	@test -e setup.py && $(PYTHON) setup.py develop; true
+	@touch $@
+
+$(PYTHON):
+	@echo "Installing $(VIRTUALENV) ..."
+	$(VIRTUALENV) $(ENVDIR)
+	@echo "Installing $(PTH_PATH) ..."
+	@echo "import sys; sys.path.append('$(PROJECT_ROOT)')" > $(PTH_PATH)
+
+pyflakes  = find $(1) -name '*.py' 2>/dev/null |
+pyflakes += grep -v -e .tox -e '\/env\/' -e '\.egg-info' |
+pyflakes += xargs $(PYTHON) -m pyflakes
+
+flakes: python
+	@$(call pyflakes,.)
