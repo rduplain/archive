@@ -3,6 +3,7 @@
 \#*
 data/
 *.db
+/dist/
 .DS_Store
 *.egg
 *.egg-info

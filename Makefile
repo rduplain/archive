@@ -1,8 +1,9 @@
 export PYTHON_VERSION = 3.4
 
 include .makefile_python
+include .makefile_pypi
 
-all: install flakes
+all: install flakes dist
 
 README.html: README.rst rst2html-command
 	rst2html $< > $@
