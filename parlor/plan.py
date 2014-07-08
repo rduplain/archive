@@ -100,9 +100,11 @@ class Plan(object):
 
     def before_request(self, fn):
         self.before_request_fns.append(fn)
+        return fn
 
     def before_first_request(self, fn):
         self.before_first_request_fns.append(fn)
+        return fn
 
     def iter_before_request_handlers(self):
         if not self._got_first_request:
@@ -116,6 +118,7 @@ class Plan(object):
 
     def after_request(self, fn):
         self.after_request_fns.append(fn)
+        return fn
 
     def iter_after_request_handlers(self):
         for fn in self.after_request_fns:
