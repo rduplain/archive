@@ -61,6 +61,8 @@ class Plan(object):
                 msg = 'Provide `method` or `methods`, but not both: {!r} {!r}'
                 raise ValueError(msg.format(methods, method))
             return [method]
+        if methods is not None:
+            return methods
         return ['GET']
 
     def add_url_rule(self, rule, endpoint=None, fn=None,
