@@ -92,9 +92,7 @@ class Plan(object):
         return decorator
 
     def iter_routes(self):
-        for key in self.routes:
-            rule, methods = key
-            endpoint, fn = self.routes[key]
+        for (rule, methods), (endpoint, fn) in self.routes.items():
             yield rule, methods, endpoint, fn
 
     def errorhandler(self, exception):
@@ -160,6 +158,5 @@ class Plan(object):
         self.provider_data[note] = recipe_name, recipe_keywords
 
     def iter_provider_data(self):
-        for note in self.provider_data:
-            recipe_name, recipe_keywords = self.provider_data[note]
+        for note, (recipe_name, recipe_keywords) in self.provider_data.items():
             yield recipe_name, note, recipe_keywords
