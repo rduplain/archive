@@ -15,6 +15,18 @@ handling; this is left to concrete Application implementations.
 Based on `jeni <http://pypi.python.org/pypi/jeni>`_.
 
 
+Dependencies
+------------
+
+Installing parlor only installs its core dependencies. To use features
+available as extras, provide the extra names (see setup.py) when installing::
+
+    pip install parlor[flask,sql]
+
+This pattern can also be used in setup.py and requirements.txt declarations,
+and can include a version spec for parlor, e.g. ``parlor[sql]>=0.2``.
+
+
 License
 -------
 
