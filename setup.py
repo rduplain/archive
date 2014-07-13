@@ -48,6 +48,7 @@ setup(
         'jeni>=0.3.1',
     ],
     extras_require={
+        'flask': ['Flask>=0.10'],
         'sql': ['SQLAlchemy>=0.6'],
     },
     classifiers=CLASSIFIERS)
