@@ -1,11 +1,10 @@
 import copy
 from threading import Lock
 
-from .express import delegate_methods
-
 
 class Plan(object):
-    def __init__(self, config=None):
+    def __init__(self, *plan_items, config=None):
+        self.plan_items = plan_items
         self._prefix = None
         self.config = {}
         if config is not None:
@@ -18,6 +17,15 @@ class Plan(object):
         self.after_request_fns = []
         self.errorhandlers = {}
         self.provider_data = {}
+
+    def __iter__(self):
+        parent_plan = self.copy()
+        for prefix, child_plan in self.plan_items:
+            for plan_copy in child_plan:
+                plan_copy.set_prefix(prefix)
+                plan_copy.update(parent_plan)
+                yield plan_copy
+        yield parent_plan
 
     def update(self, plan):
         self.config.update(plan.config)
@@ -33,6 +41,7 @@ class Plan(object):
     def copy(self):
         # One-level deep shallow copy of registration data.
         plan = self.__class__()
+        plan.plan_items = copy.copy(self.plan_items)
         plan._prefix = copy.copy(self._prefix)
         plan.config = copy.copy(self.config)
         plan.routes = copy.copy(self.routes)
@@ -154,22 +163,3 @@ class Plan(object):
         for note in self.provider_data:
             recipe_name, recipe_keywords = self.provider_data[note]
             yield recipe_name, note, recipe_keywords
-
-
-@delegate_methods
-class InjectorPlan(object):
-    """Plan which only exposes Injector registration methods."""
-
-    plan_class = Plan
-
-    delegated_methods = {
-        '_plan': [
-            'provider',
-            'factory',
-            'value',
-            'iter_provider_data',
-        ],
-    }
-
-    def __init__(self):
-        self._plan = self.plan_class()

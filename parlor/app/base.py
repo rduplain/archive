@@ -9,7 +9,7 @@ from werkzeug.routing import Submount
 
 from ..exception import ApplicationException
 from ..exception import Redirect, NotFound, MethodNotAllowed
-from ..plan import InjectorPlan
+from ..plan import Plan
 
 
 class Injector(jeni.Injector):
@@ -25,9 +25,9 @@ Injector.factory('logger', logger_factory)
 class Application(object, metaclass=abc.ABCMeta):
     METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
     injector_class = Injector
-    injector_plan_class = InjectorPlan
+    injector_plan_class = Plan
 
-    def __init__(self, plans):
+    def __init__(self, master_plan):
         class ApplicationInjector(self.injector_class):
             "Injector namespace for this Application instance."
         self.injector_class = ApplicationInjector
@@ -36,6 +36,8 @@ class Application(object, metaclass=abc.ABCMeta):
         self.endpoint_to_fn_map = {}
         self.fn_to_plan_map = {}
         self.plan_to_injector_class_map = {}
+
+        plans = list(master_plan)
 
         for plan in plans:
             rule_obj_list = []
