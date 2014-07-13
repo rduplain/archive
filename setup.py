@@ -19,12 +19,13 @@ def extract_version(filepath=None, name='__version__'):
     if filepath is None:
         filepath = path.join('parlor', '__init__.py')
     context = {}
-    for line in open(filepath):
-        if name in line:
-            exec(line, context)
-            break
-    else:
-        raise RuntimeError('{} not found in {}'.format(name, filepath))
+    with open(filepath) as fd:
+        for line in fd:
+            if name in line:
+                exec(line, context)
+                break
+        else:
+            raise RuntimeError('{} not found in {}'.format(name, filepath))
     return context[name]
 
 
