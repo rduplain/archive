@@ -47,4 +47,7 @@ setup(
         'Werkzeug>=0.9',
         'jeni>=0.3.1',
     ],
+    extras_require={
+        'sql': ['SQLAlchemy>=0.6'],
+    },
     classifiers=CLASSIFIERS)
