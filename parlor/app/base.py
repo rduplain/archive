@@ -1,5 +1,7 @@
 import abc
 import sys
+import uuid
+from urllib.parse import urlparse, urlunparse, parse_qsl
 
 import jeni
 import werkzeug.exceptions
@@ -20,6 +22,7 @@ from ..log import logger_factory
 
 
 Injector.factory('logger', logger_factory)
+Injector.value('uid_factory', lambda: str(uuid.uuid4()))
 
 
 class Application(object, metaclass=abc.ABCMeta):
@@ -61,29 +64,38 @@ class Application(object, metaclass=abc.ABCMeta):
             lambda endpoint, **values:\
                 self.url_adapter.build(endpoint, values))
 
-        self.setup(plans, self.handle_request)
+        ApplicationInjector.provider(
+            'config', self.build_dict_provider(master_plan.config))
+
+        self.setup(plans, self.handle_request, **master_plan.config)
 
     @abc.abstractmethod
-    def setup(self, plans, fn):
+    def setup(self, plans, fn, **config):
         "Register given fn to handle all routes for all methods."
 
     @abc.abstractmethod
     def prepare_request(self, injector_plan, *a, **kw):
-        "Per request: provide data to injector, return root_url, path, method."
+        """Per request: provide data to injector, return request detail.
+
+        Return value should be a tuple (url, method, session_uid) with url as
+        full URL of request and string session_uid, set as None if not
+        available.
+        """
 
     @abc.abstractmethod
     def get_implementation(self):
         "Return concrete application implementation, e.g. the WSGI app."
 
     @abc.abstractmethod
-    def build_response_application_exception(self, exc):
+    def build_response_application_exception(self, exc, session_uid=None):
         "Build a response for the given ApplicationException."
 
-    def build_response(self, fn_result):
-        return fn_result
+    @abc.abstractmethod
+    def build_response(self, fn_result, session_uid=None):
+        "Build a response, standard path. Put session_uid in response."
 
-    def build_response_handled_error(self, handled_error):
-        return handled_error
+    def build_response_handled_error(self, handled_error, session_uid=None):
+        return self.build_response(handled_error, session_uid)
 
     def build_response_unhandled_error(self, exc_type, exc_value, tb=None):
         self.raise_error(exc_type, exc_value, tb)
@@ -107,56 +119,91 @@ class Application(object, metaclass=abc.ABCMeta):
             raise Redirect(url)
 
     def handle_request(self, *a, **kw):
+        return self.try_handler(None, self.handle_request_stage1, *a, **kw)
+
+    def determine_session_uid(self, injector):
+        if injector is None:
+            return None
         try:
-            req_plan = self.injector_plan_class()
-            root_url, path, method = self.prepare_request(req_plan, *a, **kw)
-            fn, arguments = self.match(path, method)
-            req_plan.provider('arg', self.build_dict_provider(arguments))
+            return injector.get('session:uid')
+        except (LookupError, jeni.UnsetError):
+            return None
 
-            plan = self.fn_to_plan_map[fn]
-            class RequestInjector(self.plan_to_injector_class_map[plan]):
-                "Injector namespace for the current request."
-            injector_class = \
-                self.apply_injector_registration(RequestInjector, req_plan)
-
-            response = self.try_handle_request(injector_class, fn, plan)
-            if response is None:
-                raise ValueError('Response is None.')
-            return response
+    def try_handler(self, injector, fn, *a, **kw):
+        try:
+            return fn(*a, **kw)
         except Redirect as redirect:
             url = redirect.location
             if url.startswith('/'):
-                try:
-                    root_url
-                except NameError:
-                    root_url = ''
-                if root_url:
-                    url = root_url + url.lstrip('/')
+                if injector is not None:
+                    try:
+                        root_url = injector.get('root_url')
+                    except (LookupError, jeni.UnsetError):
+                        root_url = ''
+                    if root_url:
+                        url = root_url + url.lstrip('/')
             # else: assume the given url is already full location
             redirect.location = url
-            return self.build_response_application_exception(redirect)
+            sid = self.determine_session_uid(injector)
+            return self.build_response_application_exception(redirect, sid)
         except ApplicationException as exc:
-            return self.build_response_application_exception(exc)
+            sid = self.determine_session_uid(injector)
+            return self.build_response_application_exception(exc, sid)
         except Exception:
             return self.build_response_unhandled_error(*sys.exc_info())
 
-    def try_handle_request(self, injector_class, fn, plan):
-        with injector_class() as injector:
+    def handle_request_stage1(self, *a, **kw):
+        "Build an injector instance to handle the current request."
+        req_plan = self.injector_plan_class()
+        url, method, session_uid = self.prepare_request(req_plan, *a, **kw)
+        req_plan.value('session_uid', session_uid)
+
+        parsed = urlparse(url)
+        root_url = urlunparse((parsed[0], parsed[1], '', '', '', ''))
+        req_plan.value('root_url', root_url)
+
+        fn, arguments = self.match(parsed.path, method)
+        if parsed.query:
+            args = {}
+            args.update(arguments)
+            args.update(dict(parse_qsl(parsed.query)))
+        else:
+            args = arguments
+        req_plan.provider('arg', self.build_dict_provider(args))
+        req_plan.provider('args',
+            self.build_multi_dict_provider(args, require_key=False))
+
+        plan = self.fn_to_plan_map[fn]
+        class RequestInjector(self.plan_to_injector_class_map[plan]):
+            "Injector namespace for the current request."
+        injector_class = \
+            self.apply_injector_registration(RequestInjector, req_plan)
+
+        with injector_class() as i:
+            rsp = self.try_handler(i, self.handle_request_stage2, i, fn, plan)
+            if rsp is None:
+                raise ValueError('Response is None.')
+            return rsp
+
+    def handle_request_stage2(self, injector, fn, plan):
+        "Run the routed function using the injector and the plan."
+        try:
+            for handler in plan.iter_before_request_handlers():
+                injector.apply_regardless(handler)
+            result = injector.apply_regardless(fn)
+            for handler in plan.iter_after_request_handlers():
+                injector.apply_regardless(handler, result)
+        except Exception as error:
             try:
-                for handler in plan.iter_before_request_handlers():
-                    injector.apply_regardless(handler)
-                result = injector.apply_regardless(fn)
-                for handler in plan.iter_after_request_handlers():
-                    injector.apply_regardless(handler, result)
-            except Exception as error:
-                try:
-                    handled = self.handle_error(injector, plan, error)
-                    return self.build_response_handled_error(handled)
-                except Exception:
-                    # Error may have been re-raised, but not necessarily.
-                    return self.build_response_unhandled_error(*sys.exc_info())
-            else:
-                return self.build_response(result)
+                handled = self.handle_error(injector, plan, error)
+                sid = self.determine_session_uid(injector)
+                return self.build_response_handled_error(handled, sid)
+            except Exception:
+                # Error may have been re-raised, but not necessarily.
+                return self.build_response_unhandled_error(*sys.exc_info())
+        else:
+            sid = self.determine_session_uid(injector)
+            return self.build_response(result, sid)
 
     def handle_error(self, injector, plan, error):
         exc_type, exc_value, tb = sys.exc_info()

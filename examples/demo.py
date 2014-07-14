@@ -52,9 +52,42 @@ def error_route():
     raise Exception('Nope.')
 
 
+plan3 = Plan()
+
+
+@annotate
+@plan3.route('/')
+def session_route(session: 'session'):
+    return str(session)
+
+
+@annotate
+@plan3.route('/start/')
+def session_start_route(session_start: 'session_start'):
+    return session_start(user_uid='c0ffee')
+
+
+@annotate
+@plan3.route('/set/')
+def session_set_route(session: 'session', args: 'args'):
+    # Does not persist if session has not been started.
+    session.update(args)
+    return str(session)
+
+
+@annotate
+@plan3.route('/end/')
+def session_end_route(session_end: 'session_end'):
+    return session_end()
+
+
 plan = Plan(
     ('/', plan1),
-    ('/', plan2), config={'LOGGER_LEVEL': logging.DEBUG})
+    ('/', plan2),
+    ('/session', plan3),
+    LOGGER_LEVEL=logging.DEBUG,
+    SECRET_KEY='secret',
+    SQL_DATABASE_URL='sqlite:///demo.db')
 
 
 @plan.route('/foo/')
@@ -81,8 +114,25 @@ def eggs():
     return 'eggs!'
 
 
-if __name__ == '__main__':
+def build_application():
+    from parlor import Injector
     from parlor.app.flask import FlaskApplication
-    application = FlaskApplication(plan)
+    from parlor.session import init as session_init
+    from sqlalchemy.ext.declarative import declarative_base
+
+    Base = declarative_base()
+    class Application(FlaskApplication):
+        injector_class = Injector
+
+    session_init(Injector, Base, sql_ns='sql')
+
+    application = Application(plan)
+    with application.injector_class() as injector:
+        Base.metadata.create_all(injector.get('sql_engine'))
+    return application
+
+
+if __name__ == '__main__':
+    application = build_application()
     app = application.get_implementation()
     app.run(debug=True)

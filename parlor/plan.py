@@ -3,7 +3,7 @@ from threading import Lock
 
 
 class Plan(object):
-    def __init__(self, *plan_items, config=None):
+    def __init__(self, *plan_items, **config):
         self.plan_items = plan_items
         self._prefix = None
         self.config = {}
