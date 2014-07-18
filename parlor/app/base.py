@@ -190,7 +190,7 @@ class Application(object, metaclass=abc.ABCMeta):
         try:
             for handler in plan.iter_before_request_handlers():
                 injector.apply_regardless(handler)
-            result = injector.apply_regardless(fn)
+            result = injector.apply_regardless(plan.call, injector, fn)
             for handler in plan.iter_after_request_handlers():
                 injector.apply_regardless(handler, result)
         except Exception as error:

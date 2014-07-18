@@ -53,6 +53,9 @@ class Plan(object):
         plan.provider_data = copy.copy(self.provider_data)
         return plan
 
+    def call(self, injector, fn):
+        return injector.apply_regardless(fn)
+
     def has_prefix(self):
         return self._prefix is not None
 
