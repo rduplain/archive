@@ -31,7 +31,7 @@ def init(injector_class, ns='sql'):
     >>> injector = Injector()
     >>> injector.get('foo_engine')
     Engine(sqlite://)
-    >>> injector.get('foo_sessionmaker') # doctest: +ELLIPSIS
+    >>> injector.get('foo_session_factory') # doctest: +ELLIPSIS
     sessionmaker(...bind=Engine(sqlite://)...)
     >>> injector.get('foo_session') # doctest: +ELLIPSIS
     <sqlalchemy.orm.session.Session object at 0x...>
@@ -50,15 +50,15 @@ def init(injector_class, ns='sql'):
     def engine_factory(uri: config_note):
         return sqlalchemy.create_engine(uri)
 
-    @injector_class.factory(note('sessionmaker'))
+    @injector_class.factory(note('session_factory'))
     @annotate
-    def sessionmaker_factory(engine: note('engine')):
+    def session_factory_factory(engine: note('engine')):
         return sqlalchemy.orm.sessionmaker(engine)
 
     @injector_class.provider(note('session'))
     @annotate
-    def session_provider(sessionmaker: note('sessionmaker')):
-        session = sessionmaker()
+    def session_provider(session_factory: note('session_factory')):
+        session = session_factory()
         yield session
         session.close()
 
