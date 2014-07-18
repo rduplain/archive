@@ -2,9 +2,7 @@ import sys
 
 import flask
 
-from parlor import Application
-from parlor.exception import ApplicationException
-from parlor.exception import Redirect, NotFound, MethodNotAllowed
+from parlor import Application, exception
 
 
 class FlaskApplication(Application):
@@ -41,13 +39,19 @@ class FlaskApplication(Application):
     def build_response_application_exception(self, exc, session_uid=None):
         try:
             raise exc
-        except Redirect as redirect:
+        except exception.Redirect as redirect:
             r = flask.redirect(redirect.location)
-        except NotFound:
+        except exception.BadRequest:
+            r = ('Bad Request', 400, {'Content-Type': 'text/plain'})
+        except exception.Unauthorized:
+            r = ('Unauthorized', 401, {'Content-Type': 'text/plain'})
+        except exception.Forbidden:
+            r = ('Forbidden', 403, {'Content-Type': 'text/plain'})
+        except exception.NotFound:
             r = ('Not Found', 404, {'Content-Type': 'text/plain'})
-        except MethodNotAllowed:
+        except exception.MethodNotAllowed:
             r = ('Method Not Allowed', 405, {'Content-Type': 'text/plain'})
-        except ApplicationException:
+        except exception.ApplicationException:
             return self.build_response_unhandled_error(*sys.exc_info())
         return self._build_response(r, session_uid)
 

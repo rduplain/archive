@@ -2,6 +2,18 @@ class ApplicationException(Exception):
     "Base class for all Application exceptions."
 
 
+class BadRequest(ApplicationException):
+    "Request not understood."
+
+
+class Unauthorized(ApplicationException):
+    "Requires authentication."
+
+
+class Forbidden(ApplicationException):
+    "Forbidden to perform requested action."
+
+
 class NotFound(ApplicationException):
     "Route is not found."
 
