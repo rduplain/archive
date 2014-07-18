@@ -93,7 +93,6 @@ def init(injector_class, sql_ns='session'):
             session.clear()
         record.data = json.dumps(session)
         session['uid'] = record.uid
-        session['user_uid'] = record.user_uid
         db.add(record)
         db.commit()
         return session['uid']
