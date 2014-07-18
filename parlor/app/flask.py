@@ -29,7 +29,11 @@ class FlaskApplication(Application):
         provider('header', self.build_dict_provider(request.headers))
         provider('headers', self.build_multi_dict_provider(request.headers))
         session_uid = flask.session.get('session_uid')
+        self.on_request(injector_plan, request)
         return request.url, request.method, session_uid
+
+    def on_request(self, injector_plan, request):
+        pass
 
     def get_implementation(self):
         return self.app
