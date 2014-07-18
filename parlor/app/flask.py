@@ -19,6 +19,7 @@ class FlaskApplication(Application):
 
     def prepare_request(self, injector_plan, *a, **kw):
         request = flask.request._get_current_object()
+        injector_plan.value('request_data', request.data)
         provider = injector_plan.provider
         provider('cookie', self.build_dict_provider(request.cookies))
         provider('form', self.build_dict_provider(request.form))
