@@ -117,18 +117,18 @@ def eggs():
 def build_application():
     from parlor import Injector
     from parlor.app.flask import FlaskApplication
+    from parlor.sql import init as sql_init
     from parlor.session import init as session_init
-    from sqlalchemy.ext.declarative import declarative_base
 
-    Base = declarative_base()
     class Application(FlaskApplication):
         injector_class = Injector
 
-    session_init(Injector, Base, sql_ns='sql')
+    sql_init(Injector, ns='sql')
+    SessionBaseModel = session_init(Injector, sql_ns='sql')
 
     application = Application(plan)
     with application.injector_class() as injector:
-        Base.metadata.create_all(injector.get('sql_engine'))
+        SessionBaseModel.metadata.create_all(injector.get('sql_engine'))
     return application
 
 

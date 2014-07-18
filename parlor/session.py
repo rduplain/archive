@@ -5,8 +5,7 @@ import uuid
 
 from jeni import Provider, UnsetError, annotate
 from sqlalchemy import Column, DateTime, Integer, Text
-
-from .sql import init as sql_init
+from sqlalchemy.ext.declarative import declarative_base
 
 
 def default_uid_factory():
@@ -26,16 +25,13 @@ class SessionModelMixin(object):
     data = Column(Text, nullable=True)
 
 
-def init(injector_class, base_model, sql_ns='session'):
+def init(injector_class, sql_ns='session'):
     def sql_note(name):
         return '{}_{}'.format(sql_ns, name)
 
-    try:
-        injector_class.lookup(sql_note('engine'))
-    except LookupError:
-        sql_init(injector_class, ns=sql_ns)
+    Base = declarative_base()
 
-    class Session(SessionModelMixin, base_model):
+    class Session(SessionModelMixin, Base):
         __tablename__ = 'session'
         user_uid = Column(Text, index=True)
 
@@ -122,3 +118,5 @@ def init(injector_class, base_model, sql_ns='session'):
     @annotate
     def session_end_factory(end: annotate.partial(session_end)):
         return end
+
+    return Base
