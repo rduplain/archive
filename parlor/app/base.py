@@ -211,7 +211,7 @@ class Application(object, metaclass=abc.ABCMeta):
         assert exc_value is error
         for error_type, handler in plan.iter_errorhandlers():
             if isinstance(error, error_type):
-                injector.apply_regardless(handler, error)
+                return injector.apply_regardless(handler, error)
         self.raise_error(exc_type, exc_value, tb)
 
     def raise_error(self, exc_type, exc_value, tb=None):
