@@ -12,6 +12,7 @@ from werkzeug.routing import Submount
 from ..exception import ApplicationException
 from ..exception import Redirect, NotFound, MethodNotAllowed
 from ..plan import Plan
+from ..provider import dict_provider, multi_dict_provider
 
 
 class Injector(jeni.Injector):
@@ -233,25 +234,7 @@ class Application(object, metaclass=abc.ABCMeta):
         return injector_class
 
     def build_dict_provider(self, dict_, require_key=True):
-        class DictProvider(jeni.Provider):
-            def get(self, name=None):
-                if name is None:
-                    if require_key:
-                        raise jeni.UnsetError()
-                    return dict_
-                if name not in dict_:
-                    raise jeni.UnsetError()
-                return dict_[name]
-        return DictProvider
+        return dict_provider(dict_, require_key=require_key)
 
     def build_multi_dict_provider(self, multi_dict, require_key=True):
-        class MultiDictProvider(jeni.Provider):
-            def get(self, name=None):
-                if name is None:
-                    if require_key:
-                        raise jeni.UnsetError()
-                    return multi_dict
-                if name not in multi_dict:
-                    raise jeni.UnsetError()
-                return multi_dict.getlist(name)
-        return MultiDictProvider
+        return multi_dict_provider(multi_dict, require_key=require_key)
