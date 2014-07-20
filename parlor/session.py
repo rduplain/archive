@@ -111,6 +111,7 @@ def init(injector_class, sql_ns='session'):
         rowcount = db.query(Session).filter_by(uid=session_uid).delete()
         if rowcount == 0:
             raise ValueError('No session records for {}.'.format(session_uid))
+        db.commit()
         return session_uid
 
     @injector_class.factory('session_end')
