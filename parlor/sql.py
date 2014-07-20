@@ -1,6 +1,5 @@
 import sqlalchemy
 import sqlalchemy.orm
-
 from jeni import annotate
 
 

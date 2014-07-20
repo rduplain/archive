@@ -33,8 +33,8 @@ class FlaskApplication(Application):
     def on_request(self, injector_plan, request):
         pass
 
-    def get_implementation(self):
-        return self.app
+    def build_response(self, fn_result, session_uid=None):
+        return self._build_response(fn_result, session_uid)
 
     def build_response_application_exception(self, exc, session_uid=None):
         try:
@@ -55,9 +55,6 @@ class FlaskApplication(Application):
             return self.build_response_unhandled_error(*sys.exc_info())
         return self._build_response(r, session_uid)
 
-    def build_response(self, fn_result, session_uid=None):
-        return self._build_response(fn_result, session_uid)
-
     def _build_response(self, response, session_uid=None):
         if session_uid is not None:
             flask.session['session_uid'] = session_uid
@@ -65,6 +62,9 @@ class FlaskApplication(Application):
 
     def make_response(self, *a, **kw):
         return self.app.make_response(*a, **kw)
+
+    def get_implementation(self):
+        return self.app
 
     def get_test_client(self, *a, **kw):
         return self.app.test_client(*a, **kw)

@@ -1,6 +1,7 @@
 from . import app
 from . import exception
 from . import plan
+from . import provider
 
 from .app import Application, Injector
 from .plan import Plan
@@ -13,4 +14,5 @@ __all__ = [
     'app',
     'exception',
     'plan',
+    'provider',
 ]

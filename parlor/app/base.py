@@ -127,7 +127,7 @@ class Application(object, metaclass=abc.ABCMeta):
             return None
         try:
             return injector.get('session:uid')
-        except (LookupError, jeni.UnsetError):
+        except LookupError:
             return None
 
     def try_handler(self, injector, fn, *a, **kw):
