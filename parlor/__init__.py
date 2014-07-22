@@ -6,7 +6,7 @@ from . import provider
 from .app import Application, Injector
 from .plan import Plan
 
-__version__ = '0.2'
+__version__ = '0.2.1-dev'
 __all__ = [
     'Application',
     'Injector',
