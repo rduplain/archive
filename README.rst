@@ -8,8 +8,8 @@ parlor defines an `Application` class, tools for planning and running
 request-response style interaction, but does not itself implement request
 handling; this is left to concrete Application implementations.
 
-1. Plan application functionality using builders.
-2. Combine builders into crews if needed; crew configuration overrides builder.
+1. Plan application functionality using Plan instances.
+2. Compose plans into a tree as needed; master plan config overrides sub-plans.
 3. Instantiate the Application for command-line, WSGI, or other service.
 
 Based on `jeni <http://pypi.python.org/pypi/jeni>`_.
