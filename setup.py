@@ -46,7 +46,7 @@ setup(
     packages=['parlor', 'parlor.app'],
     install_requires=[
         'Werkzeug>=0.9',
-        'jeni>=0.3.2',
+        'jeni>=0.3.3',
     ],
     extras_require={
         'flask': ['Flask>=0.10'],

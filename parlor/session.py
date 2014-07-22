@@ -54,7 +54,9 @@ def init(injector_class, sql_ns='session'):
 
     @injector_class.provider('session')
     class SessionProvider(Provider):
-        def __init__(self):
+        @annotate
+        def __init__(self, db: sql_note('session')):
+            self.db = db
             self.session = None
             self.record = None
             self.session_orig = None
@@ -74,10 +76,9 @@ def init(injector_class, sql_ns='session'):
                 return self.session[name]
             return self.session
 
-        @annotate
-        def close(self, save_session: annotate.partial(save_session)):
+        def close(self):
             if 'uid' in self.session and self.session != self.session_orig:
-                save_session(self.session, record=self.record)
+                save_session(data=self.session, db=self.db, record=self.record)
 
     @annotate
     def session_start(
