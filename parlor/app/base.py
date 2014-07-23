@@ -107,7 +107,7 @@ class Application(object, metaclass=abc.ABCMeta):
             if endpoint not in self.endpoint_to_fn_map:
                 # URL routed without callable; intended to build URLs only.
                 raise NotFound()
-            return self.endpoint_to_fn_map[endpoint], arguments
+            return endpoint, self.endpoint_to_fn_map[endpoint], arguments
         except werkzeug.exceptions.NotFound:
             raise NotFound()
         except werkzeug.exceptions.MethodNotAllowed:
@@ -157,13 +157,17 @@ class Application(object, metaclass=abc.ABCMeta):
         "Build an injector instance to handle the current request."
         req_plan = self.injector_plan_class()
         url, method, session_uid = self.prepare_request(req_plan, *a, **kw)
+        req_plan.value('url', url)
+        req_plan.value('method', method)
         req_plan.value('session_uid', session_uid)
 
         parsed = urlparse(url)
         root_url = urlunparse((parsed[0], parsed[1], '', '', '', ''))
         req_plan.value('root_url', root_url)
 
-        fn, arguments = self.match(parsed.path, method)
+        endpoint, fn, arguments = self.match(parsed.path, method)
+        req_plan.value('endpoint', endpoint)
+
         if parsed.query:
             args = {}
             args.update(arguments)
