@@ -19,13 +19,15 @@ class FlaskApplication(Application):
         request = flask.request._get_current_object()
         injector_plan.value('request_data', request.data)
         provider = injector_plan.provider
-        provider('cookie', self.build_dict_provider(request.cookies))
-        provider('form', self.build_dict_provider(request.form))
-        provider('forms', self.build_multi_dict_provider(request.form))
-        provider('file', self.build_dict_provider(request.files))
-        provider('files', self.build_multi_dict_provider(request.files))
-        provider('header', self.build_dict_provider(request.headers))
-        provider('headers', self.build_multi_dict_provider(request.headers))
+        dict_provider = self.build_dict_provider
+        multi_dict_provider = self.build_multi_dict_provider
+        provider('cookie', dict_provider(request.cookies))
+        provider('form', dict_provider(request.form))
+        provider('forms', multi_dict_provider(request.form))
+        provider('file', dict_provider(request.files, require_key=False))
+        provider('files', multi_dict_provider(request.files, require_key=False))
+        provider('header', dict_provider(request.headers))
+        provider('headers', multi_dict_provider(request.headers))
         session_uid = flask.session.get('session_uid')
         self.on_request(injector_plan, request)
         return request.url, request.method, session_uid
