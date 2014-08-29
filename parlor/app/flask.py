@@ -6,8 +6,10 @@ from parlor import Application, exception
 
 
 class FlaskApplication(Application):
+    flask_class = flask.Flask
+
     def setup(self, plans, fn, **config):
-        self.app = flask.Flask(
+        self.app = self.flask_class(
             __name__,
             static_folder=None,
             template_folder=None)
@@ -28,7 +30,10 @@ class FlaskApplication(Application):
         provider('files', multi_dict_provider(request.files, require_key=False))
         provider('header', dict_provider(request.headers))
         provider('headers', multi_dict_provider(request.headers))
+
         session_uid = flask.session.get('session_uid')
+        flask._request_ctx_stack.top.session_uid_request = session_uid
+
         self.on_request(injector_plan, request)
         return request.url, request.method, session_uid
 
@@ -57,9 +62,15 @@ class FlaskApplication(Application):
             return self.build_response_unhandled_error(*sys.exc_info())
         return self._build_response(r, session_uid)
 
-    def _build_response(self, response, session_uid=None):
-        if session_uid is not None:
+    def _set_session_uid(self, session_uid):
+        flask._request_ctx_stack.top.session_uid_response = session_uid
+        if session_uid is None:
+            flask.session.clear()
+        else:
             flask.session['session_uid'] = session_uid
+
+    def _build_response(self, response, session_uid=None):
+        self._set_session_uid(session_uid)
         return self.make_response(response)
 
     def make_response(self, *a, **kw):
