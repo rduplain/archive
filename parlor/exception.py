@@ -1,3 +1,10 @@
+class InitError(RuntimeError):
+    """Specific RuntimeError provided to users for project init errors.
+
+    This is useful if RuntimeError is the most appropriate Exception to raise.
+    Use this base class for user exceptions which occur during module import.
+    """
+
 class ApplicationException(Exception):
     "Base class for all Application exceptions."
 
