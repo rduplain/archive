@@ -223,7 +223,8 @@ class Application(object, metaclass=abc.ABCMeta):
             raise exc_value.with_traceback(tb)
         raise exc_value
 
-    def apply_injector_registration(self, injector_class, plan):
+    @staticmethod
+    def apply_injector_registration(injector_class, plan):
         for recipe_name, note, recipe_keywords in plan.iter_provider_data():
             register = getattr(injector_class, recipe_name)
             register(note, **recipe_keywords)
@@ -237,8 +238,10 @@ class Application(object, metaclass=abc.ABCMeta):
         injector_class = self.apply_injector_registration(PlanInjector, plan)
         return injector_class
 
-    def build_dict_provider(self, dict_, require_key=True):
+    @staticmethod
+    def build_dict_provider(dict_, require_key=True):
         return dict_provider(dict_, require_key=require_key)
 
-    def build_multi_dict_provider(self, multi_dict, require_key=True):
+    @staticmethod
+    def build_multi_dict_provider(multi_dict, require_key=True):
         return multi_dict_provider(multi_dict, require_key=require_key)
