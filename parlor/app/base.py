@@ -5,6 +5,7 @@ from urllib.parse import urlparse, urlunparse, parse_qsl
 
 import jeni
 import werkzeug.exceptions
+from werkzeug.datastructures import MultiDict
 from werkzeug.routing import Map as UrlMap
 from werkzeug.routing import Rule as UrlRule
 from werkzeug.routing import Submount
@@ -169,7 +170,7 @@ class Application(object, metaclass=abc.ABCMeta):
         req_plan.value('endpoint', endpoint)
 
         if parsed.query:
-            args = {}
+            args = MultiDict()
             args.update(arguments)
             args.update(dict(parse_qsl(parsed.query)))
         else:
