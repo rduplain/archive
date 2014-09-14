@@ -172,7 +172,7 @@ class Application(object, metaclass=abc.ABCMeta):
         if parsed.query:
             args = MultiDict()
             args.update(arguments)
-            args.update(dict(parse_qsl(parsed.query)))
+            args.update(parse_qsl(parsed.query))
         else:
             args = arguments
         req_plan.provider('arg', self.build_dict_provider(args))
