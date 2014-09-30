@@ -29,6 +29,10 @@ class MethodNotAllowed(ApplicationException):
     "Method is not allowed on given route."
 
 
+class ServiceUnavailable(ApplicationException):
+    "Service is temporarily unavailable."
+
+
 class Redirect(ApplicationException):
     "Redirect request to another location. Put 'Location: <url>' in body."
 
