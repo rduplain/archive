@@ -58,6 +58,8 @@ class FlaskApplication(Application):
             r = ('Not Found', 404, {'Content-Type': 'text/plain'})
         except exception.MethodNotAllowed:
             r = ('Method Not Allowed', 405, {'Content-Type': 'text/plain'})
+        except exception.ServiceUnavailable:
+            r = ('Service Unavailable', 503, {'Content-Type': 'text/plain'})
         except exception.ApplicationException:
             return self.build_response_unhandled_error(*sys.exc_info())
         return self._build_response(r, session_uid)
