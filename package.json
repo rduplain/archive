@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "shadow-cljs": "2.7.9"
+  }
+}
